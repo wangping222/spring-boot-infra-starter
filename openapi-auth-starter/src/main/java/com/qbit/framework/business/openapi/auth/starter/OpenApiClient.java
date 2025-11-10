@@ -2,6 +2,8 @@ package com.qbit.framework.business.openapi.auth.starter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.qbit.framework.business.openapi.auth.starter.config.JacksonConfig;
 import com.qbit.framework.business.openapi.auth.starter.model.AccessTokenResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.ApiPathEnum;
@@ -15,8 +17,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class OpenApiClient {
+    private final static String JSON_MEDIA_TYPE = "application/json";
+    private final static String SUCCESS_CODE = "000000";
+
 
     private final OpenapiProperties properties;
     private final OkHttpClient httpClient;
@@ -41,10 +44,11 @@ public class OpenApiClient {
         this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
     }
 
-    public String getValidAccessaToken(){
+    public String getValidAccessaToken() {
         String cacheKey = "access_token:" + properties.getClientId();
         long now = System.currentTimeMillis();
-        long skewMillis = 5_000L; // 5秒安全缓冲，避免边界过期
+        // 5秒安全缓冲，避免边界过期
+        long skewMillis = 5_000L;
 
         AccessTokenHolder holder = tokenCache.getIfPresent(cacheKey);
         if (holder != null && holder.token != null && now < holder.expireAtMillis - skewMillis) {
@@ -52,18 +56,20 @@ public class OpenApiClient {
         }
 
         ApiResponse<GetCodeResponse> codeResp = getCode();
-        if (codeResp == null || codeResp.getData() == null || codeResp.getData().getCode() == null || !"000000".equals(codeResp.getCode())) {
+        if (codeResp == null || codeResp.getData() == null || codeResp.getData().getCode() == null || !SUCCESS_CODE.equals(codeResp.getCode())) {
             return null;
         }
 
         ApiResponse<AccessTokenResponse> tokenResp = generateAccessToken(codeResp.getData().getCode());
-        if (tokenResp == null || tokenResp.getData() == null || tokenResp.getData().getAccessToken() == null || !"000000".equals(tokenResp.getCode())) {
+        if (tokenResp == null || tokenResp.getData() == null || tokenResp.getData().getAccessToken() == null || !SUCCESS_CODE.equals(tokenResp.getCode())) {
             return null;
         }
 
         String token = tokenResp.getData().getAccessToken();
-        Long expiresIn = tokenResp.getData().getExpiresIn(); // 秒
-        long ttlMillis = expiresIn != null ? expiresIn * 1000L : 600_000L; // 默认10分钟
+        // 秒
+        Long expiresIn = tokenResp.getData().getExpiresIn();
+        // 默认10分钟
+        long ttlMillis = expiresIn != null ? expiresIn * 1000L : 600_000L;
         AccessTokenHolder newHolder = new AccessTokenHolder(token, now + ttlMillis);
         tokenCache.put(cacheKey, newHolder);
         return token;
@@ -136,10 +142,10 @@ public class OpenApiClient {
     private <T> ApiResponse<T> send(HttpUrl url, String method, String jsonBody, Class<T> clazz) {
         Request.Builder builder = new Request.Builder()
                 .url(url)
-                .addHeader("Accept", "application/json");
+                .addHeader("Accept", JSON_MEDIA_TYPE);
         if ("POST".equalsIgnoreCase(method)) {
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody == null ? "{}" : jsonBody);
-            builder.post(requestBody).addHeader("Content-Type", "application/json");
+            RequestBody requestBody = RequestBody.create(jsonBody == null ? "{}" : jsonBody, MediaType.get(JSON_MEDIA_TYPE));
+            builder.post(requestBody).addHeader("Content-Type", JSON_MEDIA_TYPE);
         } else {
             builder.get();
         }
@@ -214,16 +220,11 @@ public class OpenApiClient {
                 .clientId("qbitbbcbd8dd72254101")
                 .build();
 
-        ApiResponse<GetCodeResponse> authorize = client.getCode();
-        if (!Objects.equals(authorize.getCode(), "000000")) {
-            System.out.println(authorize.getMessage());
-            return;
+        for (int i = 0; i < 3; i++) {
+            String validAccessaToken = client.getValidAccessaToken();
+
+            System.out.println(validAccessaToken);
         }
-        ApiResponse<AccessTokenResponse> accessTokenResponseApiResponse = client.generateAccessToken(authorize.getData().getCode());
-
-
-        System.out.println(authorize);
-        System.out.println(accessTokenResponseApiResponse);
 
     }
 }
