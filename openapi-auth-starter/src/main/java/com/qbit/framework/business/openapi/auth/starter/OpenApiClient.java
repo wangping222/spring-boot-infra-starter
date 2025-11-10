@@ -44,11 +44,11 @@ public class OpenApiClient {
         this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
     }
 
-    public String getValidAccessaToken() {
+    public String getValidAccessToken() {
         String cacheKey = "access_token:" + properties.getClientId();
         long now = System.currentTimeMillis();
-        // 5秒安全缓冲，避免边界过期
-        long skewMillis = 5_000L;
+        // 10min安全缓冲，避免边界过期
+        long skewMillis = 600_000L;
 
         AccessTokenHolder holder = tokenCache.getIfPresent(cacheKey);
         if (holder != null && holder.token != null && now < holder.expireAtMillis - skewMillis) {
@@ -221,7 +221,7 @@ public class OpenApiClient {
                 .build();
 
         for (int i = 0; i < 3; i++) {
-            String validAccessaToken = client.getValidAccessaToken();
+            String validAccessaToken = client.getValidAccessToken();
 
             System.out.println(validAccessaToken);
         }
