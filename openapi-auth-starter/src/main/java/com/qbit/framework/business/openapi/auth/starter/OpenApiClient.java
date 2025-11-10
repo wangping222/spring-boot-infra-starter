@@ -1,19 +1,24 @@
-package com.qbit.framework.business.openapi.auth.starter.client;
+package com.qbit.framework.business.openapi.auth.starter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.qbit.framework.business.openapi.auth.starter.config.JacksonConfig;
+import com.qbit.framework.business.openapi.auth.starter.model.AccessTokenResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.ApiPathEnum;
 import com.qbit.framework.business.openapi.auth.starter.model.ApiResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.GetCodeResponse;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class OpenApiClient {
@@ -39,22 +44,32 @@ public class OpenApiClient {
      * @return ApiResponse<GetCodeResponse>
      */
     public ApiResponse<GetCodeResponse> getCode() {
-        HttpUrl url = buildAuthorizeUrl();
+        HttpUrl url = buildUrl(ApiPathEnum.GET_CODE)
+                .addQueryParameter("clientId", properties.getClientId())
+                .build();
+        return send(url, ApiPathEnum.GET_CODE.getMethod(), null, GetCodeResponse.class);
+    }
 
+    /**
+     * 调用 Open API 令牌接口：POST /open-api/v3/oauth/access-token
+     * 需要传入授权码 code，使用配置中的 clientId 和 baseUrl。
+     *
+     * @param code 授权码
+     * @return ApiResponse<AccessTokenResponse>
+     */
+    public ApiResponse<AccessTokenResponse> generateAccessToken(String code) {
+        if (code == null || code.isBlank()) {
+            return buildError("code 不能为空");
+        }
+        HttpUrl url = buildUrl(ApiPathEnum.GENERATE_ACCESS_TOKEN).build();
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("clientId", properties.getClientId());
+        payload.put("code", code);
         try {
-            String body = sendGet(url);
-            if (body == null || body.isBlank()) {
-                ApiResponse<GetCodeResponse> empty = new ApiResponse<>();
-                empty.setCode("-1");
-                empty.setMessage("Empty response body");
-                return empty;
-            }
-            return readApiResponse(body, GetCodeResponse.class);
+            String json = objectMapper.writeValueAsString(payload);
+            return send(url, ApiPathEnum.GENERATE_ACCESS_TOKEN.getMethod(), json, AccessTokenResponse.class);
         } catch (IOException e) {
-            ApiResponse<GetCodeResponse> error = new ApiResponse<>();
-            error.setCode("-1");
-            error.setMessage("HTTP request or parse failed: " + e.getMessage());
-            return error;
+            return buildError("HTTP request or parse failed: " + e.getMessage());
         }
     }
 
@@ -64,36 +79,47 @@ public class OpenApiClient {
         return objectMapper.readValue(body, tf.constructParametricType(ApiResponse.class, clazz));
     }
 
-    // 业务参数构建：组装授权接口的完整 URL
-    private HttpUrl buildAuthorizeUrl() {
+    // 统一：构建基础 URL + 路径
+    private HttpUrl.Builder buildUrl(ApiPathEnum api) {
         String baseUrl = properties.getBaseUrl();
-        String clientId = properties.getClientId();
-        ApiPathEnum getCodeApi = ApiPathEnum.GET_CODE;
-
         String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         HttpUrl base = HttpUrl.parse(normalizedBase);
         if (base == null) {
             throw new IllegalArgumentException("非法的 baseUrl: " + normalizedBase);
         }
-
-        HttpUrl.Builder urlBuilder = base.newBuilder()
-                .addPathSegments(getCodeApi.getPath())
-                .addQueryParameter("clientId", clientId);
-
-        return urlBuilder.build();
+        return base.newBuilder().addPathSegments(api.getPath());
     }
 
-    // 请求发送：以 GET 方法请求指定 URL，并返回响应体字符串
-    private String sendGet(HttpUrl url) throws IOException {
-        Request request = new Request.Builder()
+    // 通用：发送请求并解析
+    private <T> ApiResponse<T> send(HttpUrl url, String method, String jsonBody, Class<T> clazz) {
+        Request.Builder builder = new Request.Builder()
                 .url(url)
-                .get()
-                .addHeader("Accept", "application/json")
-                .build();
-        try (Response response = httpClient.newCall(request).execute()) {
-            ResponseBody responseBody = response.body();
-            return responseBody == null ? null : responseBody.string();
+                .addHeader("Accept", "application/json");
+        if ("POST".equalsIgnoreCase(method)) {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody == null ? "{}" : jsonBody);
+            builder.post(requestBody).addHeader("Content-Type", "application/json");
+        } else {
+            builder.get();
         }
+        try (Response response = httpClient.newCall(builder.build()).execute()) {
+            ResponseBody responseBody = response.body();
+            String body = responseBody == null ? null : responseBody.string();
+            if (body == null || body.isBlank()) {
+                return buildError("Empty response body");
+            }
+            return readApiResponse(body, clazz);
+        } catch (Exception e) {
+            return buildError("HTTP request or parse failed: " + e.getMessage());
+        }
+    }
+
+    // 统一：错误响应构造
+
+    private <T> ApiResponse<T> buildError(String message) {
+        ApiResponse<T> error = new ApiResponse<>();
+        error.setCode("-1");
+        error.setMessage(message);
+        return error;
     }
 
     public static Builder builder() {
@@ -143,11 +169,14 @@ public class OpenApiClient {
 
         OpenApiClient client = OpenApiClient.builder()
                 .baseUrl("https://api-sandbox.interlace.money")
-                .clientId("qbitbbcbd8dd72254101")
+                .clientId("qbitbbcbd8dd72254101aaaa")
                 .build();
 
         ApiResponse<GetCodeResponse> authorize = client.getCode();
+        ApiResponse<AccessTokenResponse> accessTokenResponseApiResponse = client.generateAccessToken(authorize.getData().getCode());
+
         System.out.println(authorize);
+        System.out.println(accessTokenResponseApiResponse);
 
     }
 }

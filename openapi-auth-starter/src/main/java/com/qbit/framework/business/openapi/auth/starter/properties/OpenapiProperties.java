@@ -2,7 +2,9 @@ package com.qbit.framework.business.openapi.auth.starter.properties;
 
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@ConfigurationProperties(prefix = "openapi")
 @Data
 public class OpenapiProperties {
 
