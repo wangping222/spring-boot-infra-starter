@@ -1,4 +1,4 @@
-package com.qbit.framework.business.openapi.auth.starter;
+package com.qbit.framework.business.openapi.auth.starter.factory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
