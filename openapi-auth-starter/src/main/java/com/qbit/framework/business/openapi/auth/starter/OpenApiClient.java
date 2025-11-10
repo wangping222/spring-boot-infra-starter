@@ -15,6 +15,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ public class OpenApiClient {
     private final OpenapiProperties properties;
     private final OkHttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final Cache<String, AccessTokenHolder> tokenCache;
 
     public OpenApiClient(OpenapiProperties properties) {
         this(properties, new OkHttpClient());
@@ -35,6 +38,45 @@ public class OpenApiClient {
         this.properties = Objects.requireNonNull(properties, "OpenapiProperties must not be null");
         this.httpClient = httpClient == null ? new OkHttpClient() : httpClient;
         this.objectMapper = JacksonConfig.defaultMapper();
+        this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
+    }
+
+    public String getValidAccessaToken(){
+        String cacheKey = "access_token:" + properties.getClientId();
+        long now = System.currentTimeMillis();
+        long skewMillis = 5_000L; // 5秒安全缓冲，避免边界过期
+
+        AccessTokenHolder holder = tokenCache.getIfPresent(cacheKey);
+        if (holder != null && holder.token != null && now < holder.expireAtMillis - skewMillis) {
+            return holder.token;
+        }
+
+        ApiResponse<GetCodeResponse> codeResp = getCode();
+        if (codeResp == null || codeResp.getData() == null || codeResp.getData().getCode() == null || !"000000".equals(codeResp.getCode())) {
+            return null;
+        }
+
+        ApiResponse<AccessTokenResponse> tokenResp = generateAccessToken(codeResp.getData().getCode());
+        if (tokenResp == null || tokenResp.getData() == null || tokenResp.getData().getAccessToken() == null || !"000000".equals(tokenResp.getCode())) {
+            return null;
+        }
+
+        String token = tokenResp.getData().getAccessToken();
+        Long expiresIn = tokenResp.getData().getExpiresIn(); // 秒
+        long ttlMillis = expiresIn != null ? expiresIn * 1000L : 600_000L; // 默认10分钟
+        AccessTokenHolder newHolder = new AccessTokenHolder(token, now + ttlMillis);
+        tokenCache.put(cacheKey, newHolder);
+        return token;
+    }
+
+    private static final class AccessTokenHolder {
+        private final String token;
+        private final long expireAtMillis;
+
+        private AccessTokenHolder(String token, long expireAtMillis) {
+            this.token = token;
+            this.expireAtMillis = expireAtMillis;
+        }
     }
 
     /**
@@ -169,11 +211,16 @@ public class OpenApiClient {
 
         OpenApiClient client = OpenApiClient.builder()
                 .baseUrl("https://api-sandbox.interlace.money")
-                .clientId("qbitbbcbd8dd72254101aaaa")
+                .clientId("qbitbbcbd8dd72254101")
                 .build();
 
         ApiResponse<GetCodeResponse> authorize = client.getCode();
+        if (!Objects.equals(authorize.getCode(), "000000")) {
+            System.out.println(authorize.getMessage());
+            return;
+        }
         ApiResponse<AccessTokenResponse> accessTokenResponseApiResponse = client.generateAccessToken(authorize.getData().getCode());
+
 
         System.out.println(authorize);
         System.out.println(accessTokenResponseApiResponse);
