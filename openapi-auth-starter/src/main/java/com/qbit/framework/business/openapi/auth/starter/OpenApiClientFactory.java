@@ -11,6 +11,7 @@ import com.qbit.framework.business.openapi.auth.starter.model.ApiResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.GetCodeResponse;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
 import money.interlace.sdk.invoker.ApiClient;
+import money.interlace.sdk.invoker.auth.ApiKeyAuth;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -21,11 +22,12 @@ import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class OpenApiClient {
+public class OpenApiClientFactory {
     private final static String JSON_MEDIA_TYPE = "application/json";
     private final static String SUCCESS_CODE = "000000";
 
@@ -35,18 +37,16 @@ public class OpenApiClient {
     private final ObjectMapper objectMapper;
     private final Cache<String, AccessTokenHolder> tokenCache;
 
-    private final ApiClient apiClient;
 
-    public OpenApiClient(OpenapiProperties properties) {
+    public OpenApiClientFactory(OpenapiProperties properties) {
         this(properties, buildHttpClient(properties));
     }
 
-    public OpenApiClient(OpenapiProperties properties, OkHttpClient httpClient) {
+    public OpenApiClientFactory(OpenapiProperties properties, OkHttpClient httpClient) {
         this.properties = Objects.requireNonNull(properties, "OpenapiProperties must not be null");
         this.httpClient = httpClient == null ? buildHttpClient(properties) : httpClient;
         this.objectMapper = JacksonConfig.defaultMapper();
         this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
-        this.apiClient = buildApiClient(properties, httpClient);
     }
 
     private static ApiClient buildApiClient(OpenapiProperties properties, OkHttpClient httpClient) {
@@ -63,7 +63,7 @@ public class OpenApiClient {
                 .build();
     }
 
-    public String getValidAccessToken() {
+    private String getValidAccessToken() {
         String cacheKey = "access_token:" + properties.getClientId();
         long now = System.currentTimeMillis();
         // 10min安全缓冲，避免边界过期
@@ -110,7 +110,7 @@ public class OpenApiClient {
      *
      * @return ApiResponse<GetCodeResponse>
      */
-    public ApiResponse<GetCodeResponse> getCode() {
+    private ApiResponse<GetCodeResponse> getCode() {
         HttpUrl url = buildUrl(ApiPathEnum.GET_CODE)
                 .addQueryParameter("clientId", properties.getClientId())
                 .build();
@@ -124,7 +124,7 @@ public class OpenApiClient {
      * @param code 授权码
      * @return ApiResponse<AccessTokenResponse>
      */
-    public ApiResponse<AccessTokenResponse> generateAccessToken(String code) {
+    private ApiResponse<AccessTokenResponse> generateAccessToken(String code) {
         if (code == null || code.isBlank()) {
             return buildError("code 不能为空");
         }
@@ -217,7 +217,7 @@ public class OpenApiClient {
             return this;
         }
 
-        public OpenApiClient build() {
+        public OpenApiClientFactory build() {
             String baseUrl = properties.getBaseUrl();
             String clientId = properties.getClientId();
 
@@ -227,23 +227,27 @@ public class OpenApiClient {
             if (clientId == null || clientId.isBlank()) {
                 throw new IllegalStateException("OpenapiProperties.clientId 未配置");
             }
-            return new OpenApiClient(properties, httpClient);
+            return new OpenApiClientFactory(properties, httpClient);
         }
+    }
+
+    public ApiClient getApiClient() {
+        ApiClient apiClient = buildApiClient(properties, httpClient);
+        List<String> names = List.of("ApiKeyAuth", "authHeader");
+        for (String name : names) {
+            ApiKeyAuth authHeader = (ApiKeyAuth) apiClient.getAuthentication(name);
+            authHeader.setApiKey(this.getValidAccessToken());
+        }
+        return apiClient;
     }
 
     public static void main(String[] args) {
 
-
-        OpenApiClient client = OpenApiClient.builder()
+        OpenApiClientFactory factory = OpenApiClientFactory.builder()
                 .baseUrl("https://api-sandbox.interlace.money")
                 .clientId("qbitbbcbd8dd72254101")
                 .build();
-
-        for (int i = 0; i < 3; i++) {
-            String validAccessaToken = client.getValidAccessToken();
-
-            System.out.println(validAccessaToken);
-        }
-
+        ApiClient apiClient = factory.getApiClient();
+        System.out.println(apiClient);
     }
 }
