@@ -11,4 +11,9 @@ public class OpenapiProperties {
     private String baseUrl;
 
     private String clientId;
+
+    private Long readTimeout;
+    private Long writeTimeout;
+    private Long connectionTimeout;
+
 }

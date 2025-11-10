@@ -10,6 +10,7 @@ import com.qbit.framework.business.openapi.auth.starter.model.ApiPathEnum;
 import com.qbit.framework.business.openapi.auth.starter.model.ApiResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.GetCodeResponse;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
+import money.interlace.sdk.invoker.ApiClient;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class OpenApiClient {
     private final static String JSON_MEDIA_TYPE = "application/json";
@@ -33,15 +35,32 @@ public class OpenApiClient {
     private final ObjectMapper objectMapper;
     private final Cache<String, AccessTokenHolder> tokenCache;
 
+    private final ApiClient apiClient;
+
     public OpenApiClient(OpenapiProperties properties) {
-        this(properties, new OkHttpClient());
+        this(properties, buildHttpClient(properties));
     }
 
     public OpenApiClient(OpenapiProperties properties, OkHttpClient httpClient) {
         this.properties = Objects.requireNonNull(properties, "OpenapiProperties must not be null");
-        this.httpClient = httpClient == null ? new OkHttpClient() : httpClient;
+        this.httpClient = httpClient == null ? buildHttpClient(properties) : httpClient;
         this.objectMapper = JacksonConfig.defaultMapper();
         this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
+        this.apiClient = buildApiClient(properties, httpClient);
+    }
+
+    private static ApiClient buildApiClient(OpenapiProperties properties, OkHttpClient httpClient) {
+        ApiClient apiClient1 = new ApiClient(httpClient);
+        apiClient1.setBasePath(properties.getBaseUrl());
+        return apiClient1;
+    }
+
+    private static OkHttpClient buildHttpClient(OpenapiProperties properties) {
+        return new OkHttpClient.Builder()
+                .readTimeout(Objects.isNull(properties.getReadTimeout()) ? 60 : properties.getReadTimeout(), TimeUnit.SECONDS)
+                .writeTimeout(Objects.isNull(properties.getWriteTimeout()) ? 60 : properties.getWriteTimeout(), TimeUnit.SECONDS)
+                .connectTimeout(Objects.isNull(properties.getConnectionTimeout()) ? 60 : properties.getConnectionTimeout(), TimeUnit.SECONDS)
+                .build();
     }
 
     public String getValidAccessToken() {
