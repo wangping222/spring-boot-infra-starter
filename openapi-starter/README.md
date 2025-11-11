@@ -8,7 +8,7 @@
 
 <dependency>
     <groupId>com.qbit.framework</groupId>
-    <artifactId>openapi-auth-starter</artifactId>
+    <artifactId>openapi-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
