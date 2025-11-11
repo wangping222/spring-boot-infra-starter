@@ -17,7 +17,6 @@
 
 ```yaml
 openapi:
-  auth:
     base-url: https://api.example.com
     clientId: YOUR_CLIENT_ID
 
