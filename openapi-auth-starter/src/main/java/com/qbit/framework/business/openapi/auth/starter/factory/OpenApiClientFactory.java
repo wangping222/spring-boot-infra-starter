@@ -140,27 +140,11 @@ public class OpenApiClientFactory {
     public ApiClient getApiClient() {
         ApiClient apiClient = buildApiClient(properties, httpClient);
         List<String> names = List.of("ApiKeyAuth", "authHeader");
+        String validAccessToken = this.getValidAccessToken();
         for (String name : names) {
             ApiKeyAuth authHeader = (ApiKeyAuth) apiClient.getAuthentication(name);
-            authHeader.setApiKey(this.getValidAccessToken());
+            authHeader.setApiKey(validAccessToken);
         }
         return apiClient;
-    }
-
-    public static void main(String[] args) throws ApiException {
-        AuthenticationApi authenticationApi = new AuthenticationApi();
-        CodeRespDTO code = authenticationApi.getCode("qbitbbcbd8dd72254101");
-        AccessTokenReqDTO accessTokenReqDTO = new AccessTokenReqDTO();
-        accessTokenReqDTO.setClientId("qbitbbcbd8dd72254101");
-        accessTokenReqDTO.setCode(code.getData().getCode());
-
-        AccessTokenRespDTO accessToken = authenticationApi.getAccessToken(accessTokenReqDTO);
-
-        OpenApiClientFactory factory = OpenApiClientFactory.builder()
-                .baseUrl("https://api-sandbox.interlace.money")
-                .clientId("qbitbbcbd8dd72254101")
-                .build();
-        ApiClient apiClient = factory.getApiClient();
-        System.out.println(apiClient);
     }
 }
