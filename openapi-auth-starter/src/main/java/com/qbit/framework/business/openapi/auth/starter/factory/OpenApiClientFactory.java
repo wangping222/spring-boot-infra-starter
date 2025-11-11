@@ -1,7 +1,5 @@
 package com.qbit.framework.business.openapi.auth.starter.factory;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
 import lombok.extern.slf4j.Slf4j;
 import money.interlace.sdk.api.AuthenticationApi;
@@ -12,30 +10,27 @@ import money.interlace.sdk.model.AccessTokenReqDTO;
 import money.interlace.sdk.model.AccessTokenRespDTO;
 import money.interlace.sdk.model.CodeRespDTO;
 import okhttp3.OkHttpClient;
+import org.springframework.data.redis.core.RedisTemplate;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class OpenApiClientFactory {
-    private final static String JSON_MEDIA_TYPE = "application/json";
     private final static String SUCCESS_CODE = "000000";
 
 
     private final OpenapiProperties properties;
     private final OkHttpClient httpClient;
-    private final Cache<String, AccessTokenHolder> tokenCache;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
-    public OpenApiClientFactory(OpenapiProperties properties) {
-        this(properties, buildHttpClient(properties));
-    }
-
-    public OpenApiClientFactory(OpenapiProperties properties, OkHttpClient httpClient) {
+    public OpenApiClientFactory(OpenapiProperties properties, OkHttpClient httpClient, RedisTemplate<String, String> redisTemplate) {
         this.properties = Objects.requireNonNull(properties, "OpenapiProperties must not be null");
         this.httpClient = httpClient == null ? buildHttpClient(properties) : httpClient;
-        this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
+        this.redisTemplate = redisTemplate;
     }
 
     private static ApiClient buildApiClient(OpenapiProperties properties, OkHttpClient httpClient) {
@@ -54,13 +49,12 @@ public class OpenApiClientFactory {
 
     private String getValidAccessToken() {
         String cacheKey = "access_token:" + properties.getClientId();
-        long now = System.currentTimeMillis();
-        // 10min安全缓冲，避免边界过期
-        long skewMillis = 600_000L;
-
-        AccessTokenHolder holder = tokenCache.getIfPresent(cacheKey);
-        if (holder != null && holder.token != null && now < holder.expireAtMillis - skewMillis) {
-            return holder.token;
+        // 先尝试从 Redis 缓存中读取
+        if (redisTemplate != null) {
+            String cachedToken = redisTemplate.opsForValue().get(cacheKey);
+            if (cachedToken != null && !cachedToken.isBlank()) {
+                return cachedToken;
+            }
         }
         AuthenticationApi authenticationApi = new AuthenticationApi();
 
@@ -84,23 +78,14 @@ public class OpenApiClientFactory {
         }
 
         String token = tokenResp.getData().getAccessToken();
-        // 秒
+        // 过期秒数
         Integer expiresIn = tokenResp.getData().getExpiresIn();
-        // 默认10分钟
-        int ttlMillis = expiresIn * 1000;
-        AccessTokenHolder newHolder = new AccessTokenHolder(token, now + ttlMillis);
-        tokenCache.put(cacheKey, newHolder);
-        return token;
-    }
-
-    private static final class AccessTokenHolder {
-        private final String token;
-        private final long expireAtMillis;
-
-        private AccessTokenHolder(String token, long expireAtMillis) {
-            this.token = token;
-            this.expireAtMillis = expireAtMillis;
+        // 10 分钟安全缓冲，避免边界过期
+        long ttlSeconds = Math.max(1, (long) expiresIn - 600);
+        if (redisTemplate != null) {
+            redisTemplate.opsForValue().set(cacheKey, token, Duration.ofSeconds(ttlSeconds));
         }
+        return token;
     }
 
 
@@ -111,6 +96,7 @@ public class OpenApiClientFactory {
     public static class Builder {
         private OpenapiProperties properties = new OpenapiProperties();
         private OkHttpClient httpClient;
+        private RedisTemplate<String, String> redisTemplate;
 
         public Builder properties(OpenapiProperties properties) {
             this.properties = properties;
@@ -132,6 +118,11 @@ public class OpenApiClientFactory {
             return this;
         }
 
+        public Builder redisTemplate(RedisTemplate<String, String> redisTemplate) {
+            this.redisTemplate = redisTemplate;
+            return this;
+        }
+
         public OpenApiClientFactory build() {
             String baseUrl = properties.getBaseUrl();
             String clientId = properties.getClientId();
@@ -142,7 +133,7 @@ public class OpenApiClientFactory {
             if (clientId == null || clientId.isBlank()) {
                 throw new IllegalStateException("OpenapiProperties.clientId 未配置");
             }
-            return new OpenApiClientFactory(properties, httpClient);
+            return new OpenApiClientFactory(properties, httpClient, redisTemplate);
         }
     }
 
