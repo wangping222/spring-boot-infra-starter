@@ -58,6 +58,23 @@ public class OpenApiClient {
      * 通用执行入口（带一个参数）。
      * 在调用前会将默认 ApiClient 设置为由工厂创建的实例。
      *
+     * 使用示例：
+     * <pre>{@code
+     * OpenApiClient client = new OpenApiClient(factory);
+     * UUID id = ...;
+     * SomeResponse res = client.execute(
+     *         SomeApi.class,
+     *         (api, uuid) -> {
+     *             try {
+     *                 return api.getById(uuid);
+     *             } catch (ApiException e) {
+     *                 throw new RuntimeException(e);
+     *             }
+     *         },
+     *         id
+     * );
+     * }</pre>
+     *
      * @param <A> API 类型
      * @param <P> 传入的业务参数类型
      * @param <R> 返回结果类型

@@ -1,14 +1,7 @@
 package com.qbit.framework.business.openapi.auth.starter.factory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.qbit.framework.business.openapi.auth.starter.config.JacksonConfig;
-import com.qbit.framework.business.openapi.auth.starter.model.AccessTokenResponse;
-import com.qbit.framework.business.openapi.auth.starter.model.ApiPathEnum;
-import com.qbit.framework.business.openapi.auth.starter.model.ApiResponse;
-import com.qbit.framework.business.openapi.auth.starter.model.GetCodeResponse;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
 import lombok.extern.slf4j.Slf4j;
 import money.interlace.sdk.api.AuthenticationApi;
@@ -18,18 +11,9 @@ import money.interlace.sdk.invoker.auth.ApiKeyAuth;
 import money.interlace.sdk.model.AccessTokenReqDTO;
 import money.interlace.sdk.model.AccessTokenRespDTO;
 import money.interlace.sdk.model.CodeRespDTO;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +25,6 @@ public class OpenApiClientFactory {
 
     private final OpenapiProperties properties;
     private final OkHttpClient httpClient;
-    private final ObjectMapper objectMapper;
     private final Cache<String, AccessTokenHolder> tokenCache;
 
 
@@ -52,7 +35,6 @@ public class OpenApiClientFactory {
     public OpenApiClientFactory(OpenapiProperties properties, OkHttpClient httpClient) {
         this.properties = Objects.requireNonNull(properties, "OpenapiProperties must not be null");
         this.httpClient = httpClient == null ? buildHttpClient(properties) : httpClient;
-        this.objectMapper = JacksonConfig.defaultMapper();
         this.tokenCache = Caffeine.newBuilder().maximumSize(16).build();
     }
 
