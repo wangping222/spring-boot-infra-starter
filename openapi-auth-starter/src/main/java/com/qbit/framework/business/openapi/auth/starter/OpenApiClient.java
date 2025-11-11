@@ -20,15 +20,54 @@ public class OpenApiClient {
     }
 
 
-    // 通用执行入口（无额外参数）
-    public <A, R> R execute(Class<A> apiType, Function<A, R> action) throws ApiException {
+    /**
+     * 通用执行入口（无额外参数）。
+     * 在调用前会将默认 ApiClient 设置为由工厂创建的实例。
+     *
+     * 使用示例：
+     * <pre>{@code
+     * OpenApiClient client = new OpenApiClient(factory);
+     * UUID budgetId = ...;
+     * UUID merchantId = ...;
+     * BudgetResponse res = client.execute(
+     *         BudgetsApi.class,
+     *         api -> {
+     *             try {
+     *                 return api.getBudget(budgetId, merchantId);
+     *             } catch (ApiException e) {
+     *                 throw new RuntimeException(e);
+     *             }
+     *         }
+     * );
+     * }</pre>
+     *
+     * @param <A> API 类型（例如 {@code BudgetsApi}）
+     * @param <R> 返回结果类型
+     * @param apiType 要实例化并执行的 API 类型
+     * @param action 针对 API 实例的业务操作函数
+     * @return 操作返回的结果
+     * @throws IllegalStateException 当 API 类型无法实例化时抛出
+     */
+    public <A, R> R execute(Class<A> apiType, Function<A, R> action) {
         Configuration.setDefaultApiClient(factory.getApiClient());
         A api = newApiInstance(apiType);
         return action.apply(api);
     }
 
-    // 通用执行入口（带一个参数）
-    public <A, P, R> R execute(Class<A> apiType, BiFunction<A, P, R> action, P param) throws ApiException {
+    /**
+     * 通用执行入口（带一个参数）。
+     * 在调用前会将默认 ApiClient 设置为由工厂创建的实例。
+     *
+     * @param <A> API 类型
+     * @param <P> 传入的业务参数类型
+     * @param <R> 返回结果类型
+     * @param apiType 要实例化并执行的 API 类型
+     * @param action 针对 API 实例的业务操作函数，接受一个参数
+     * @param param 传递给操作函数的参数
+     * @return 操作返回的结果
+     * @throws IllegalStateException 当 API 类型无法实例化时抛出
+     */
+    public <A, P, R> R execute(Class<A> apiType, BiFunction<A, P, R> action, P param) {
         Configuration.setDefaultApiClient(factory.getApiClient());
         A api = newApiInstance(apiType);
         return action.apply(api, param);

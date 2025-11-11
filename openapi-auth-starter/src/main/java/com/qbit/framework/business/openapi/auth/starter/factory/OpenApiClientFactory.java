@@ -10,8 +10,14 @@ import com.qbit.framework.business.openapi.auth.starter.model.ApiPathEnum;
 import com.qbit.framework.business.openapi.auth.starter.model.ApiResponse;
 import com.qbit.framework.business.openapi.auth.starter.model.GetCodeResponse;
 import com.qbit.framework.business.openapi.auth.starter.properties.OpenapiProperties;
+import lombok.extern.slf4j.Slf4j;
+import money.interlace.sdk.api.AuthenticationApi;
 import money.interlace.sdk.invoker.ApiClient;
+import money.interlace.sdk.invoker.ApiException;
 import money.interlace.sdk.invoker.auth.ApiKeyAuth;
+import money.interlace.sdk.model.AccessTokenReqDTO;
+import money.interlace.sdk.model.AccessTokenRespDTO;
+import money.interlace.sdk.model.CodeRespDTO;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -27,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class OpenApiClientFactory {
     private final static String JSON_MEDIA_TYPE = "application/json";
     private final static String SUCCESS_CODE = "000000";
@@ -73,22 +80,32 @@ public class OpenApiClientFactory {
         if (holder != null && holder.token != null && now < holder.expireAtMillis - skewMillis) {
             return holder.token;
         }
+        AuthenticationApi authenticationApi = new AuthenticationApi();
 
-        ApiResponse<GetCodeResponse> codeResp = getCode();
-        if (codeResp == null || codeResp.getData() == null || codeResp.getData().getCode() == null || !SUCCESS_CODE.equals(codeResp.getCode())) {
-            return null;
-        }
+        AccessTokenRespDTO tokenResp = null;
+        try {
+            CodeRespDTO codeResp = authenticationApi.getCode(properties.getClientId());
+            if (codeResp == null || codeResp.getData() == null || !SUCCESS_CODE.equals(codeResp.getCode())) {
+                return null;
+            }
+            AccessTokenReqDTO accessTokenReqDTO = new AccessTokenReqDTO();
+            accessTokenReqDTO.setClientId(properties.getClientId());
+            accessTokenReqDTO.setCode(codeResp.getData().getCode());
 
-        ApiResponse<AccessTokenResponse> tokenResp = generateAccessToken(codeResp.getData().getCode());
-        if (tokenResp == null || tokenResp.getData() == null || tokenResp.getData().getAccessToken() == null || !SUCCESS_CODE.equals(tokenResp.getCode())) {
+            tokenResp = authenticationApi.getAccessToken(accessTokenReqDTO);
+            if (tokenResp == null || tokenResp.getData() == null || !SUCCESS_CODE.equals(tokenResp.getCode())) {
+                return null;
+            }
+        } catch (ApiException e) {
+            log.error("get access token error", e);
             return null;
         }
 
         String token = tokenResp.getData().getAccessToken();
         // 秒
-        Long expiresIn = tokenResp.getData().getExpiresIn();
+        Integer expiresIn = tokenResp.getData().getExpiresIn();
         // 默认10分钟
-        long ttlMillis = expiresIn != null ? expiresIn * 1000L : 600_000L;
+        int ttlMillis = expiresIn * 1000;
         AccessTokenHolder newHolder = new AccessTokenHolder(token, now + ttlMillis);
         tokenCache.put(cacheKey, newHolder);
         return token;
@@ -104,90 +121,6 @@ public class OpenApiClientFactory {
         }
     }
 
-    /**
-     * 调用 Open API 授权接口：GET /open-api/v3/oauth/authorize
-     * 使用配置中的 clientId 和 baseUrl。
-     *
-     * @return ApiResponse<GetCodeResponse>
-     */
-    private ApiResponse<GetCodeResponse> getCode() {
-        HttpUrl url = buildUrl(ApiPathEnum.GET_CODE)
-                .addQueryParameter("clientId", properties.getClientId())
-                .build();
-        return send(url, ApiPathEnum.GET_CODE.getMethod(), null, GetCodeResponse.class);
-    }
-
-    /**
-     * 调用 Open API 令牌接口：POST /open-api/v3/oauth/access-token
-     * 需要传入授权码 code，使用配置中的 clientId 和 baseUrl。
-     *
-     * @param code 授权码
-     * @return ApiResponse<AccessTokenResponse>
-     */
-    private ApiResponse<AccessTokenResponse> generateAccessToken(String code) {
-        if (code == null || code.isBlank()) {
-            return buildError("code 不能为空");
-        }
-        HttpUrl url = buildUrl(ApiPathEnum.GENERATE_ACCESS_TOKEN).build();
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("clientId", properties.getClientId());
-        payload.put("code", code);
-        try {
-            String json = objectMapper.writeValueAsString(payload);
-            return send(url, ApiPathEnum.GENERATE_ACCESS_TOKEN.getMethod(), json, AccessTokenResponse.class);
-        } catch (IOException e) {
-            return buildError("HTTP request or parse failed: " + e.getMessage());
-        }
-    }
-
-    // 使用 Jackson 泛型反序列化，将 body 解析为 ApiResponse<T>
-    private <T> ApiResponse<T> readApiResponse(String body, Class<T> clazz) throws IOException {
-        TypeFactory tf = objectMapper.getTypeFactory();
-        return objectMapper.readValue(body, tf.constructParametricType(ApiResponse.class, clazz));
-    }
-
-    // 统一：构建基础 URL + 路径
-    private HttpUrl.Builder buildUrl(ApiPathEnum api) {
-        String baseUrl = properties.getBaseUrl();
-        String normalizedBase = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-        HttpUrl base = HttpUrl.parse(normalizedBase);
-        if (base == null) {
-            throw new IllegalArgumentException("非法的 baseUrl: " + normalizedBase);
-        }
-        return base.newBuilder().addPathSegments(api.getPath());
-    }
-
-    // 通用：发送请求并解析
-    private <T> ApiResponse<T> send(HttpUrl url, String method, String jsonBody, Class<T> clazz) {
-        Request.Builder builder = new Request.Builder()
-                .url(url)
-                .addHeader("Accept", JSON_MEDIA_TYPE);
-        if ("POST".equalsIgnoreCase(method)) {
-            RequestBody requestBody = RequestBody.create(jsonBody == null ? "{}" : jsonBody, MediaType.get(JSON_MEDIA_TYPE));
-            builder.post(requestBody).addHeader("Content-Type", JSON_MEDIA_TYPE);
-        } else {
-            builder.get();
-        }
-        try (Response response = httpClient.newCall(builder.build()).execute()) {
-            ResponseBody responseBody = response.body();
-            String body = responseBody == null ? null : responseBody.string();
-            if (body == null || body.isBlank()) {
-                return buildError("Empty response body");
-            }
-            return readApiResponse(body, clazz);
-        } catch (Exception e) {
-            return buildError("HTTP request or parse failed: " + e.getMessage());
-        }
-    }
-
-    // 统一：错误响应构造
-
-    private <T> ApiResponse<T> buildError(String message) {
-        ApiResponse<T> error = new ApiResponse<>();
-        error.setCode("-1");
-        error.setMessage(message);
-        return error;
-    }
 
     public static Builder builder() {
         return new Builder();
@@ -241,7 +174,14 @@ public class OpenApiClientFactory {
         return apiClient;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ApiException {
+        AuthenticationApi authenticationApi = new AuthenticationApi();
+        CodeRespDTO code = authenticationApi.getCode("qbitbbcbd8dd72254101");
+        AccessTokenReqDTO accessTokenReqDTO = new AccessTokenReqDTO();
+        accessTokenReqDTO.setClientId("qbitbbcbd8dd72254101");
+        accessTokenReqDTO.setCode(code.getData().getCode());
+
+        AccessTokenRespDTO accessToken = authenticationApi.getAccessToken(accessTokenReqDTO);
 
         OpenApiClientFactory factory = OpenApiClientFactory.builder()
                 .baseUrl("https://api-sandbox.interlace.money")
