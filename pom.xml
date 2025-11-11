@@ -17,8 +17,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>merchant-auth-starter</module>
-        <module>openapi-auth-starter</module>
+        <module>merchant-api-starter</module>
+        <module>openapi-starter</module>
     </modules>
 
     <properties>
