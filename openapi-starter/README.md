@@ -1,12 +1,15 @@
+通过开放平台对接qbit openapi v3接口
+
 ### 依赖配置
 
 在业务工程中引入依赖（先在根目录执行 `mvn clean install` 安装本模块到本地仓库）：
 
 ```xml
+
 <dependency>
-  <groupId>com.qbit.framework</groupId>
-  <artifactId>openapi-auth-starter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+    <groupId>com.qbit.framework</groupId>
+    <artifactId>openapi-auth-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -20,14 +23,17 @@ openapi:
 
 ```
 
-> 需要启用 Redis 
+> 需要启用 Redis
+
 ### 使用示例
 
 示例：通过工厂获得 `OpenApiClient` 并调用外部 API，鉴权与令牌管理由 Starter 统一处理。
 
 ```java
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
+
 import money.interlace.sdk.api.BudgetsApi;
 import money.interlace.sdk.client.OpenApiClient;
 import money.interlace.sdk.client.OpenApiClientFactory;
@@ -45,14 +51,14 @@ public class BudgetService {
 
     public BudgetResponse getBudget(UUID budgetId, UUID merchantId) {
         return client.execute(
-            BudgetsApi.class,
-            api -> {
-                try {
-                    return api.getBudget(budgetId, merchantId);
-                } catch (ApiException e) {
-                    throw new RuntimeException(e);
+                BudgetsApi.class,
+                api -> {
+                    try {
+                        return api.getBudget(budgetId, merchantId);
+                    } catch (ApiException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
         );
     }
 }
