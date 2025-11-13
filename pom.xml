@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.qbit.framework</groupId>
-    <artifactId>business-starter</artifactId>
+    <artifactId>spring-boot-infra-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>business-starter</name>
     <description>business-starter</description>
@@ -19,12 +19,15 @@
     <modules>
         <module>merchant-api-starter</module>
         <module>openapi-starter</module>
+        <module>oss-starter</module>
+        <module>xxljob-starter</module>
     </modules>
 
     <properties>
         <java.version>17</java.version>
         <revision>0.0.1-SNAPSHOT</revision>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
@@ -56,6 +59,21 @@
                 <groupId>money.interlace.sdk</groupId>
                 <artifactId>interlace-java-sdk</artifactId>
                 <version>3.0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>3.18.2</version>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>2.38.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>3.2.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
