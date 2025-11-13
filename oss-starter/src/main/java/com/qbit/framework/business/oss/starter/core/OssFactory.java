@@ -15,6 +15,11 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 对象存储模板工厂。
+ * 根据配置名按需（懒加载）创建并缓存不同提供商（阿里云 OSS / AWS S3）的 `OssTemplate`，
+ * 提供默认实例获取与名称路由能力，屏蔽底层 SDK 差异。
+ */
 public class OssFactory {
     private final Map<String, OssClientProperties> configs;
     private final Map<String, OssTemplate> cache = new ConcurrentHashMap<>();
@@ -65,4 +70,3 @@ public class OssFactory {
         return new OssTemplate(new AwsS3Delegate(s3, presigner, p.getBucketName()));
     }
 }
-
