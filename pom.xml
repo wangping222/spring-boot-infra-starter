@@ -21,6 +21,7 @@
         <module>openapi-starter</module>
         <module>oss-starter</module>
         <module>xxljob-starter</module>
+        <module>trace-starter</module>
     </modules>
 
     <properties>

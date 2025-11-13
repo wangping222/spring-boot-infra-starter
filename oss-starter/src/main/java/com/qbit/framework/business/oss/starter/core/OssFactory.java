@@ -48,9 +48,17 @@ public class OssFactory {
             throw new IllegalArgumentException("unknown oss client: " + name);
         }
         if (p.getProvider() == OssProperties.Provider.ALIYUN) {
-            OSS oss = new OSSClientBuilder().build(p.getEndpoint(), p.getAccessKeyId(), p.getAccessKeySecret());
-            return new OssTemplate(new AliyunOssDelegate(oss, p.getBucketName()));
+            return createAliyunTemplate(p);
         }
+        return createAwsTemplate(p);
+    }
+
+    private OssTemplate createAliyunTemplate(OssClientProperties p) {
+        OSS oss = new OSSClientBuilder().build(p.getEndpoint(), p.getAccessKeyId(), p.getAccessKeySecret());
+        return new OssTemplate(new AliyunOssDelegate(oss, p.getBucketName()));
+    }
+
+    private OssTemplate createAwsTemplate(OssClientProperties p) {
         S3Configuration s3cfg = S3Configuration.builder().build();
         software.amazon.awssdk.services.s3.S3ClientBuilder builder = S3Client.builder()
                 .region(Region.of(p.getRegion()))
