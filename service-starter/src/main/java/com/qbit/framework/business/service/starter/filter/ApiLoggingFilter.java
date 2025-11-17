@@ -13,23 +13,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * 简化版接口调用日志过滤器（格式化输出 + 全部请求头）
- * 示例：
- * POST http://localhost:8080/api/assets/internal/apn/send-message
- * content-type: application/json
- * headers:
- * Host: localhost:8080
- * Authorization: Bearer xxx
- * ...
- *
- * {
- *   "deviceToken": "...",
- *   "title": "title",
- *   "body": "body"
- * }
+ * 简化版接口调用日志过滤器
  */
 @Slf4j
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
 public class ApiLoggingFilter extends CommonsRequestLoggingFilter implements Ordered {
 

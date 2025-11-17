@@ -13,7 +13,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -22,7 +21,6 @@ import java.io.IOException;
  * 兜底异常处理
  */
 @Slf4j
-@Component
 public class ErrorHandlingFilter implements Filter, Ordered {
 
     @Override
