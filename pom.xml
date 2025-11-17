@@ -23,21 +23,75 @@
         <module>xxljob-starter</module>
         <module>trace-starter</module>
         <module>excel-starter</module>
+        <module>service-starter</module>
     </modules>
 
-        <properties>
-            <java.version>17</java.version>
-            <revision>0.0.1-SNAPSHOT</revision>
-            <spring.boot.dependencies.version>3.3.3</spring.boot.dependencies.version>
-            <fastjson2.version>2.0.59</fastjson2.version>
-            <lombok.version>1.18.38</lombok.version>
-            <swagger.annotations.version>2.2.22</swagger.annotations.version>
-            <interlace.sdk.version>3.0.5</interlace.sdk.version>
-            <aliyun.sdk.oss.version>3.18.2</aliyun.sdk.oss.version>
-            <aws.sdk.s3.version>2.38.1</aws.sdk.s3.version>
-            <xxl.job.core.version>3.2.0</xxl.job.core.version>
-            <fastexcel.version>1.3.0</fastexcel.version>
-        </properties>
+    <properties>
+        <java.version>17</java.version>
+        <revision>0.0.1-SNAPSHOT</revision>
+        <spring.boot.dependencies.version>3.3.3</spring.boot.dependencies.version>
+        <fastjson2.version>2.0.59</fastjson2.version>
+        <lombok.version>1.18.38</lombok.version>
+        <swagger.annotations.version>2.2.22</swagger.annotations.version>
+        <interlace.sdk.version>3.0.5</interlace.sdk.version>
+        <aliyun.sdk.oss.version>3.18.2</aliyun.sdk.oss.version>
+        <aws.sdk.s3.version>2.38.1</aws.sdk.s3.version>
+        <xxl.job.core.version>3.2.0</xxl.job.core.version>
+        <fastexcel.version>1.3.0</fastexcel.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Spring相关 -->
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <!-- 数据库相关 -->
+        <mybatis.version>3.5.15</mybatis.version>
+        <mybatis-flex.version>1.11.1</mybatis-flex.version>
+        <mysql.version>8.0.29</mysql.version>
+        <pgsql.version>42.6.1</pgsql.version>
+        <!-- 工具类库 -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <kotlin.version>1.8.10</kotlin.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <dubbo.version>3.3.0</dubbo.version>
+        <curator.version>5.2.1</curator.version>
+        <nacos.version>2023.0.3.2</nacos.version>
+        <knife4j.version>4.6.0</knife4j.version>
+        <redisson.version>3.36.0</redisson.version>
+        <captcha.version>1.3.0</captcha.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-io.version>2.15.1</commons-io.version>
+        <commons-codec.version>1.16.0</commons-codec.version>
+        <!-- Web3相关 -->
+        <web3j.version>4.9.8</web3j.version>
+        <!-- 安全相关 -->
+        <jjwt.version>0.12.3</jjwt.version>
+        <!-- API文档 -->
+        <openapi.doc.version>2.6.0</openapi.doc.version>
+        <swagger-openapiv3.version>2.2.22</swagger-openapiv3.version>
+        <!-- 其他工具 -->
+        <dynamictp.version>1.1.9.1</dynamictp.version>
+        <jakarta.validation.version>3.0.2</jakarta.validation.version>
+        <instancio-junit.version>5.4.0</instancio-junit.version>
+        <generator.version>1.0.1</generator.version>
+        <protobuf.java.version>2.5.0</protobuf.java.version>
+        <aliyun-log-logback.version>0.1.30</aliyun-log-logback.version>
+        <tika.version>1.24.1</tika.version>
+        <!-- Maven 构建优化 -->
+        <maven.compiler.fork>true</maven.compiler.fork>
+        <maven.test.fork>true</maven.test.fork>
+        <!-- 阿里云 -->
+        <aliyun.dm20151123.version>1.6.2</aliyun.dm20151123.version>
+        <aliyun.ecs20140526.version>5.1.2</aliyun.ecs20140526.version>
+        <!-- Excel和PDF相关 -->
+        <easyexcel.version>3.3.4</easyexcel.version>
+        <velocity.version>1.7</velocity.version>
+        <itext.html2pdf.version>5.0.4</itext.html2pdf.version>
+        <itext.pdf.version>5.5.13.4</itext.pdf.version>
+        <itext.font-asian.version>8.0.3</itext.font-asian.version>
+        <aws.ses.version>2.35.7</aws.ses.version>
+    </properties>
 
 
     <dependencyManagement>
@@ -60,11 +114,6 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>money.interlace.sdk</groupId>
@@ -90,6 +139,242 @@
                 <groupId>cn.idev.excel</groupId>
                 <artifactId>fastexcel</artifactId>
                 <version>${fastexcel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot-starter-web.version}</version>
+            </dependency>
+            <!-- Spring Cloud -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2023.0.3.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun.openservices</groupId>
+                <artifactId>aliyun-log-logback-appender</artifactId>
+                <version>${aliyun-log-logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <!--图片验证码-->
+            <dependency>
+                <groupId>com.anji-plus</groupId>
+                <artifactId>spring-boot-starter-captcha</artifactId>
+                <version>${captcha.version}</version>
+            </dependency>
+            <!-- 阿里云邮件 -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dm20151123</artifactId>
+                <version>${aliyun.dm20151123.version}</version>
+            </dependency>
+            <!-- AWS邮件 -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>sesv2</artifactId>
+                <version>${aws.ses.version}</version>
+            </dependency>
+            <!-- 阿里云公共 -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>ecs20140526</artifactId>
+                <version>${aliyun.ecs20140526.version}</version>
+            </dependency>
+            <!-- HTTP客户端 -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <!-- 安全相关 -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <!-- API文档 -->
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-openapiv3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${openapi.doc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-common</artifactId>
+                <version>${openapi.doc.version}</version>
+            </dependency>
+            <!-- nacos 配置中心 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
+            <!-- 线程池 -->
+            <dependency>
+                <groupId>org.dromara.dynamictp</groupId>
+                <artifactId>dynamic-tp-spring-boot-starter-common</artifactId>
+                <version>${dynamictp.version}</version>
+            </dependency>
+            <!-- 验证 -->
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation.version}</version>
+            </dependency>
+            <!--easyexcel -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+            <!--pdf-->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>html2pdf</artifactId>
+                <version>${itext.html2pdf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>itextpdf</artifactId>
+                <version>${itext.pdf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>font-asian</artifactId>
+                <version>${itext.font-asian.version}</version>
+            </dependency>
+            <!-- MyBatis相关 -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-annotation</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-core</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-codegen</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-processor</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <!-- 数据库驱动 -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${pgsql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xingfudeshi</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <!-- MapStruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.instancio</groupId>
+                <artifactId>instancio-junit</artifactId>
+                <version>${instancio-junit.version}</version>
+            </dependency>
+            <!-- JWT Dependencies -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>spring-boot-starter-jwt-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <version>${tika.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

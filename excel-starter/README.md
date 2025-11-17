@@ -10,24 +10,20 @@ Excel Starter：封装 Apache Fesod(FastExcel) 的读写能力
 </dependency>
 ```
 
-### 简单使用
+### 简单使用（自定义表头 + 列表写入）
 
 ```java
 import com.qbit.framework.business.excel.starter.ExcelClient;
-import cn.idev.excel.annotation.ExcelProperty;
+import com.qbit.framework.business.excel.starter.ExcelCellDescriptor;
 
-class Row {
-  @ExcelProperty("字符串") String s;
-}
+List<ExcelCellDescriptor<UserKycDTO>> heads = List.of(
+  ExcelCellDescriptor.of("法人代表姓名", UserKycDTO::getLegalPerson),
+  ExcelCellDescriptor.of("手机号", UserKycDTO::getPhone),
+  ExcelCellDescriptor.of("企业名称", UserKycDTO::getCompanyName)
+);
 
-// 写（显式 clazz）
-excelClient.write("demo.xlsx", Row.class, List.of(new Row()), "Sheet1");
-
-// 写（省略 clazz，自动从首元素推断）
-excelClient.write("demo.xlsx", List.of(new Row()), "Sheet1");
-
-// 读
-List<Row> rows = excelClient.read("demo.xlsx", Row.class);
+List<UserKycDTO> data = userKycService.listAll();
+excelClient.write("kyc.xlsx", heads, data, "excel.sheet.kyc", java.util.Locale.CHINA, null);
 ```
 
 ### 国际化与表头本地化
@@ -40,46 +36,48 @@ excel:
   default-locale: zh-CN
 ```
 
-- 使用国际化的 sheet 名称与表头：
-
 ```java
-// 使用消息码作为 sheet 名称，未命中时回退原值
-excelClient.write("orders.xlsx", Order.class, data, "excel.sheet.orders");
-
-// 动态表头国际化：按字段注解或默认消息码生成本地化标题
-excelClient.writeWithI18nHeaders("orders.xlsx", Order.class, data, "excel.sheet.orders", java.util.Locale.CHINA);
-
-class Order {
-  // 优先使用注解中的 value[0] 作为消息码
-  @ExcelProperty("excel.header.Order.id") Long id;
-  // 未设置注解时，使用默认消息码 excel.header.Order.status
-  @ExcelProperty("excel.header.Order.status") Integer status;
-}
+// 标题与工作表名支持消息码，未命中时回退原值
+List<ExcelCellDescriptor<Order>> heads = List.of(
+  ExcelCellDescriptor.of("excel.header.order.id", Order::getId),
+  ExcelCellDescriptor.of("excel.header.order.status", Order::getStatus)
+);
+excelClient.write("orders.xlsx", heads, orders, "excel.sheet.orders", java.util.Locale.CHINA, null);
 ```
+
+> 说明：当 `excel.i18n-enabled=true` 时，标题与 `sheetName` 将通过 `MessageSource` 做本地化；传入普通中文标题亦可，效果同上。
 
 ### 数据转换（写入前加工）
 
 ```java
-// 在写入前对数据做加工（脱敏、格式化、枚举值本地化等）
-excelClient.write(
-    "users.xlsx",
-    users,
-    "excel.sheet.users",
-    u -> {
-      User v = new User();
-      v.setName(u.getName());
-      v.setEmail(mask(u.getEmail()));
-      v.setStatus(u.getStatus());
-      return v;
-    }
+List<ExcelCellDescriptor<User>> heads = List.of(
+  ExcelCellDescriptor.of("用户名称", User::getName),
+  ExcelCellDescriptor.of("邮箱", User::getEmail),
+  ExcelCellDescriptor.of("状态", User::getStatus)
 );
 
-// 带语言环境的重载
-excelClient.write(
-    "users.xlsx",
-    users,
-    "excel.sheet.users",
-    java.util.Locale.US,
-    u -> localize(u)
+java.util.function.UnaryOperator<User> converter = u -> {
+  User v = new User();
+  v.setName(u.getName());
+  v.setEmail(mask(u.getEmail()));
+  v.setStatus(localizeStatus(u.getStatus()));
+  return v;
+};
+
+excelClient.write("users.xlsx", heads, users, "excel.sheet.users", java.util.Locale.US, converter);
+```
+
+### 分页写入（按页拉取）
+
+```java
+List<ExcelCellDescriptor<UserKycDTO>> heads = List.of(
+  ExcelCellDescriptor.of("法人代表姓名", UserKycDTO.Fields.legalPerson),
+  ExcelCellDescriptor.of("手机号", UserKycDTO.Fields.phone),
+  ExcelCellDescriptor.of("企业名称", UserKycDTO.Fields.companyName)
 );
+
+java.util.function.BiFunction<Integer, Integer, List<UserKycDTO>> fetch =
+    (pageNo, pageSize) -> userKycRepository.fetchPage(pageNo, pageSize);
+
+excelClient.write("kyc.xlsx", heads, fetch, "excel.sheet.kyc", java.util.Locale.CHINA, 1000, null);
 ```
