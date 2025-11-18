@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter.encrypt;
+package com.qbit.framework.server.common.encrypt;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;

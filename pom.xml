@@ -24,6 +24,7 @@
         <module>trace-starter</module>
         <module>excel-starter</module>
         <module>service-starter</module>
+        <module>service-common</module>
     </modules>
 
     <properties>
@@ -370,6 +371,11 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qbit.framework</groupId>
+                <artifactId>service-common</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

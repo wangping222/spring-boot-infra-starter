@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter;
+package com.qbit.framework.server.common.web;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

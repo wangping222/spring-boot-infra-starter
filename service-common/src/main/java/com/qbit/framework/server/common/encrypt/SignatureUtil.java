@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter.encrypt;
+package com.qbit.framework.server.common.encrypt;
 
 
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter.page;
+package com.qbit.framework.server.common.page;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;

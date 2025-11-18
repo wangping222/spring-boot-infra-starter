@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter.encrypt;
+package com.qbit.framework.server.common.encrypt;
 
 import java.io.IOException;
 import java.io.InputStream;

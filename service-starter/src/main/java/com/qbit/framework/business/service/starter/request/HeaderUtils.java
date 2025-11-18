@@ -1,6 +1,6 @@
 package com.qbit.framework.business.service.starter.request;
 
-import com.qbit.framework.business.service.starter.encrypt.ShaUtil;
+import com.qbit.framework.server.common.encrypt.ShaUtil;
 import org.springframework.http.HttpHeaders;
 
 import java.security.SecureRandom;

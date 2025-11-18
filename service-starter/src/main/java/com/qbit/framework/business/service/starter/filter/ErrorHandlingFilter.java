@@ -1,10 +1,10 @@
 package com.qbit.framework.business.service.starter.filter;
 
 import com.alibaba.fastjson2.JSON;
-import com.qbit.framework.business.service.starter.Result;
 import com.qbit.framework.business.service.starter.exception.CustomerException;
 import com.qbit.framework.business.service.starter.exception.DefaultExceptionCode;
 import com.qbit.framework.business.service.starter.filter.order.WebFilterOrdered;
+import com.qbit.framework.server.common.web.Result;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

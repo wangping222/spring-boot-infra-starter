@@ -1,4 +1,4 @@
-package com.qbit.framework.business.service.starter.page;
+package com.qbit.framework.server.common.page;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
