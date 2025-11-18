@@ -1,4 +1,4 @@
-merchant-api-starter 提供基于 OpenFeign 的统一签名拦截器与超时配置，用于在调用内部接口时自动添加资产签名请求头。
+internal-api-starter 提供基于 OpenFeign 的统一签名拦截器与超时配置，用于在调用内部接口时自动添加资产签名请求头。
 
 ## 使用步骤
 
@@ -7,7 +7,7 @@ merchant-api-starter 提供基于 OpenFeign 的统一签名拦截器与超时配
 ```xml
 <dependency>
   <groupId>com.qbit.framework</groupId>
-  <artifactId>merchant-api-starter</artifactId>
+  <artifactId>internal-api-starter</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```

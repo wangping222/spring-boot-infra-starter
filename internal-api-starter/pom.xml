@@ -10,8 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>merchant-api-starter</artifactId>
-
+    <artifactId>internal-api-starter</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,6 +20,7 @@
         <dependency>
             <groupId>com.qbit.framework</groupId>
             <artifactId>service-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>

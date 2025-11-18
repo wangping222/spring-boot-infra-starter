@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>merchant-api-starter</module>
+        <module>internal-api-starter</module>
         <module>openapi-starter</module>
         <module>oss-starter</module>
         <module>xxljob-starter</module>

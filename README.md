@@ -11,7 +11,7 @@
 ## 模块总览
 
 - `openapi-starter`：对接 qbit OpenAPI v3，统一鉴权与令牌管理
-- `merchant-api-starter`：通过内部接口对接 qbit 业务接口
+- `internal-api-starter`：通过内部接口对接 qbit 业务接口
 - `oss-starter`：封装阿里云 OSS 与 AWS S3，提供一致 API 与多实例支持
 - `trace-starter`：提供 MDC 封装、Trace ID/Span ID 工具与 Web 自动传播
 - `xxljob-starter`：对 XXL-Job 的 Spring Boot 自动装配与增强
@@ -39,7 +39,7 @@
 3. 配置与使用请参考各模块 README：
 
    - `openapi-starter/README.md`
-   - `merchant-api-starter/README.md`
+  - `merchant-api-starter/README.md`（internal-api-starter）
    - `oss-starter/README.md`
    - `trace-starter/README.md`
    - `xxljob-starter/README.md`
