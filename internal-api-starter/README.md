@@ -17,10 +17,12 @@ internal-api-starter 提供基于 OpenFeign 的统一签名拦截器与超时配
 ```yaml
 feign:
   api:
+    base-url: https://api.example.internal
     account-id: YOUR_ACCOUNT_ID
     secret: YOUR_SECRET
     connect-timeout-millis: 5000
     read-timeout-millis: 10000
+    use-okhttp: true
 ```
 
 3. 启用 Feign
@@ -63,7 +65,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class DemoApplication {
   public static void main(String[] args) {
     SpringApplication.run(DemoApplication.class, args);
-  }
+ }
 }
 ```
 
@@ -85,7 +87,7 @@ public class MerchantService {
 }
 ```
 
-5. 发起调用（签名头会自动添加）
+5. 发起调用（签名头会自动添加，且未显式配置 url 的客户端将自动绑定到 `feign.api.base-url`）
 
 ```java
 import lombok.RequiredArgsConstructor;
@@ -107,8 +109,9 @@ public class MerchantService {
 - 拦截器会根据请求方法与路径生成签名并注入到请求头中（`nonceStr`、`timestamp`、`sign`、`account-id` 等）。
 - 超时通过 `feign.api.connect-timeout-millis` 与 `feign.api.read-timeout-millis` 配置。
 - 仅在配置了 `feign.api.account-id` 与 `feign.api.secret` 时拦截器生效。
+- 当 `feign.api.base-url` 配置存在且客户端未设置 `@FeignClient(url=...)` 时，系统会自动为该客户端绑定 `base-url`。
 
 ## 相关实现位置
 
-- 签名拦截器与超时配置：`merchant-api-starter/src/main/java/com/qbit/framework/business/merchant/starter/config/FeignAutoConfiguration.java:20`
+- 签名拦截器与超时配置：`internal-api-starter/src/main/java/com/qbit/framework/business/merchant/starter/config/FeignAutoConfiguration.java:20`
 - 签名头构造：`service-starter/src/main/java/com/qbit/framework/business/service/starter/request/HeaderUtils.java:36`
