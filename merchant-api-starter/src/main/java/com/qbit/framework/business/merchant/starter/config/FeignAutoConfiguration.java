@@ -1,6 +1,8 @@
 package com.qbit.framework.business.merchant.starter.config;
 
 import com.qbit.framework.business.merchant.starter.properties.FeignApiProperties;
+import com.qbit.framework.business.merchant.starter.signature.PropertiesSecretProvider;
+import com.qbit.framework.business.merchant.starter.signature.SecretProvider;
 import com.qbit.framework.business.service.starter.request.HeaderUtils;
 import feign.Request;
 import feign.RequestInterceptor;
@@ -16,10 +18,14 @@ import org.springframework.context.annotation.Bean;
 public class FeignAutoConfiguration {
 
     @Bean
-    @ConditionalOnProperty(prefix = "server.starter.feign.api", name = {"account-id", "secret"})
+    @ConditionalOnProperty(prefix = "feign.api", name = {"account-id", "secret"})
     public RequestInterceptor merchantAuthRequestInterceptor(FeignApiProperties properties) {
         return template -> {
-            var headers = HeaderUtils.buildNodeHeaders(properties.getAccountId(), properties.getSecret());
+            var headers = HeaderUtils.buildAssetsHeaders(
+                    properties.getSecret(),
+                    template.method(),
+                    template.path(),
+                    properties.getAccountId());
             headers.forEach((k, v) -> v.forEach(value -> template.header(k, value)));
         };
     }
@@ -31,5 +37,10 @@ public class FeignAutoConfiguration {
                 properties.getReadTimeoutMillis(),
                 true
         );
+    }
+
+    @Bean
+    public SecretProvider secretProvider(FeignApiProperties properties) {
+        return new PropertiesSecretProvider(properties);
     }
 }

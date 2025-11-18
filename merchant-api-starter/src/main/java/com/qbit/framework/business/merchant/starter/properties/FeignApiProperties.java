@@ -11,4 +11,7 @@ public class FeignApiProperties {
     private String secret;
     private Integer connectTimeoutMillis = 5000;
     private Integer readTimeoutMillis = 10000;
+    private Boolean verifyEnabled = false;
+    private Long signatureWindowMillis = 300000L;
+    private java.util.List<String> verifyPaths;
 }
