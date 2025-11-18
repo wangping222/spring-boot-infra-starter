@@ -42,8 +42,11 @@ public class MdcScope implements AutoCloseable {
     public void close() {
         for (String k : keys) {
             String prev = previous.get(k);
-            if (prev == null) MDC.remove(k);
-            else MDC.put(k, prev);
+            if (prev == null) {
+                MDC.remove(k);
+            } else {
+                MDC.put(k, prev);
+            }
         }
     }
 }

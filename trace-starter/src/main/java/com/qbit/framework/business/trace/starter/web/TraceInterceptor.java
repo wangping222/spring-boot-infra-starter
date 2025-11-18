@@ -11,9 +11,13 @@ public class TraceInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String traceId = headerFirst(request, "X-Trace-Id", "Trace-Id", "traceId");
-        if (traceId == null || traceId.isBlank()) traceId = TraceUtils.newId();
+        if (traceId == null || traceId.isBlank()) {
+            traceId = TraceUtils.newId();
+        }
         String spanId = headerFirst(request, "X-Span-Id", "Span-Id", "spanId");
-        if (spanId == null || spanId.isBlank()) spanId = TraceUtils.newId();
+        if (spanId == null || spanId.isBlank()) {
+            spanId = TraceUtils.newId();
+        }
         TraceUtils.setTrace(traceId, spanId);
         return true;
     }
@@ -27,7 +31,9 @@ public class TraceInterceptor implements HandlerInterceptor {
     private String headerFirst(HttpServletRequest request, String... names) {
         for (String n : names) {
             String v = request.getHeader(n);
-            if (v != null && !v.isBlank()) return v;
+            if (v != null && !v.isBlank()) {
+                return v;
+            }
         }
         return null;
     }
