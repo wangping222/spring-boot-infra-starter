@@ -3,7 +3,7 @@ package com.qbit.framework.business.xxljob.starter.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "xxl.job")
+@ConfigurationProperties(prefix = "server.starter.xxl.job")
 @Data
 public class XxlJobProperties {
     private Boolean enabled = true;

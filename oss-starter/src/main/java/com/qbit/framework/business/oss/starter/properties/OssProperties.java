@@ -3,7 +3,7 @@ package com.qbit.framework.business.oss.starter.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "oss")
+@ConfigurationProperties(prefix = "server.starter.oss")
 @Data
 public class OssProperties {
     public enum Provider { ALIYUN, AWS }

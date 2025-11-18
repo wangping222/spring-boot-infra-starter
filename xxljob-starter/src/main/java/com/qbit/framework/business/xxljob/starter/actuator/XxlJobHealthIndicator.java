@@ -22,7 +22,9 @@ public class XxlJobHealthIndicator implements HealthIndicator {
         String[] addrs = props.getAdminAddresses().split(",");
         for (String addr : addrs) {
             addr = addr.trim();
-            if (addr.isEmpty()) continue;
+            if (addr.isEmpty()) {
+                continue;
+            }
             try {
                 URL url = new URL(addr);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
