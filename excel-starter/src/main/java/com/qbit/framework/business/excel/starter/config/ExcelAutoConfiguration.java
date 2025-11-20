@@ -15,6 +15,6 @@ public class ExcelAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ExcelClient excelClient(ExcelProperties props) {
-        return new ExcelClient();
+        return new ExcelClient(props);
     }
 }

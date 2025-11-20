@@ -1,83 +1,97 @@
-Excel Starter：封装 Apache Fesod(FastExcel) 的读写能力
+# Excel Starter
 
-### 依赖
+基于 EasyExcel 封装的 Spring Boot Starter，提供便捷的 Excel 导入导出功能。
+
+## 特性
+
+- **简单易用**: 只需注入 `ExcelClient` 即可使用。
+- **灵活导出**: 支持基于注解 (`@ExcelProperty`) 和基于动态描述符 (`ExcelCellDescriptor`) 的导出方式。
+- **Web 集成**: 专为 Web 环境优化，自动处理响应头和流。
+- **自动配置**: 开箱即用。
+
+## 依赖
+
+在你的 `pom.xml` 中添加：
 
 ```xml
 <dependency>
-  <groupId>com.qbit.framework</groupId>
-  <artifactId>excel-starter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+    <groupId>com.qbit.framework</groupId>
+    <artifactId>excel-starter</artifactId>
+    <version>${project.version}</version>
 </dependency>
 ```
 
-### 简单使用（自定义表头 + 列表写入）
+## 配置
 
-```java
-import com.qbit.framework.business.excel.starter.ExcelClient;
-import com.qbit.framework.business.excel.starter.ExcelCellDescriptor;
-
-List<ExcelCellDescriptor<UserKycDTO>> heads = List.of(
-  ExcelCellDescriptor.of("法人代表姓名", UserKycDTO::getLegalPerson),
-  ExcelCellDescriptor.of("手机号", UserKycDTO::getPhone),
-  ExcelCellDescriptor.of("企业名称", UserKycDTO::getCompanyName)
-);
-
-List<UserKycDTO> data = userKycService.listAll();
-excelClient.write("kyc.xlsx", heads, data, "excel.sheet.kyc", java.util.Locale.CHINA, null);
-```
-
-### 国际化与表头本地化
-
-- 配置示例：
+可选配置：
 
 ```yaml
 excel:
-  i18n-enabled: true
-  default-locale: zh-CN
+  default-sheet-name: Sheet1
 ```
 
+## 使用指南
+
+### 1. 注入 ExcelClient
+
 ```java
-// 标题与工作表名支持消息码，未命中时回退原值
-List<ExcelCellDescriptor<Order>> heads = List.of(
-  ExcelCellDescriptor.of("excel.header.order.id", Order::getId),
-  ExcelCellDescriptor.of("excel.header.order.status", Order::getStatus)
-);
-excelClient.write("orders.xlsx", heads, orders, "excel.sheet.orders", java.util.Locale.CHINA, null);
+@Autowired
+private ExcelClient excelClient;
 ```
 
-> 说明：当 `excel.i18n-enabled=true` 时，标题与 `sheetName` 将通过 `MessageSource` 做本地化；传入普通中文标题亦可，效果同上。
+### 2. 基于注解导出 (推荐)
 
-### 数据转换（写入前加工）
+定义你的数据模型：
 
 ```java
-List<ExcelCellDescriptor<User>> heads = List.of(
-  ExcelCellDescriptor.of("用户名称", User::getName),
-  ExcelCellDescriptor.of("邮箱", User::getEmail),
-  ExcelCellDescriptor.of("状态", User::getStatus)
-);
+@Data
+public class UserExportVO {
+    @ExcelProperty("用户ID")
+    private Long id;
 
-java.util.function.UnaryOperator<User> converter = u -> {
-  User v = new User();
-  v.setName(u.getName());
-  v.setEmail(mask(u.getEmail()));
-  v.setStatus(localizeStatus(u.getStatus()));
-  return v;
-};
-
-excelClient.write("users.xlsx", heads, users, "excel.sheet.users", java.util.Locale.US, converter);
+    @ExcelProperty("用户名")
+    private String username;
+    
+    @ExcelProperty("注册时间")
+    private Date createTime;
+}
 ```
 
-### 分页写入（按页拉取）
+在 Controller 中导出：
 
 ```java
-List<ExcelCellDescriptor<UserKycDTO>> heads = List.of(
-  ExcelCellDescriptor.of("法人代表姓名", UserKycDTO.Fields.legalPerson),
-  ExcelCellDescriptor.of("手机号", UserKycDTO.Fields.phone),
-  ExcelCellDescriptor.of("企业名称", UserKycDTO.Fields.companyName)
-);
+@GetMapping("/export")
+public void export(HttpServletResponse response) throws IOException {
+    List<UserExportVO> data = userService.listExportData();
+    excelClient.export(response, "用户列表", UserExportVO.class, data);
+}
+```
 
-java.util.function.BiFunction<Integer, Integer, List<UserKycDTO>> fetch =
-    (pageNo, pageSize) -> userKycRepository.fetchPage(pageNo, pageSize);
+### 3. 动态表头导出 (Fluent API)
+无需定义 VO 类，直接指定表头和字段提取器：
 
-excelClient.write("kyc.xlsx", heads, fetch, "excel.sheet.kyc", java.util.Locale.CHINA, 1000, null);
+```java
+@GetMapping("/export-dynamic")
+public void exportDynamic(HttpServletResponse response) throws IOException {
+    List<User> users = userService.listAll();
+    
+    excelClient.export(users)
+        .fileName("用户动态列表")
+        .sheetName("Sheet1")
+        .column("ID", User::getId, id -> "USER_" + id)
+        .column("姓名", User::getName)
+        .column("邮箱", User::getEmail)
+        .writeTo(response);
+}
+```
+
+### 4. 导入 Excel
+
+```java
+@PostMapping("/import")
+public void importExcel(@RequestParam("file") MultipartFile file) throws IOException {
+    excelClient.read(file.getInputStream(), UserImportVO.class, new PageReadListener<UserImportVO>(dataList -> {
+        userService.saveBatch(dataList);
+    }));
+}
 ```
