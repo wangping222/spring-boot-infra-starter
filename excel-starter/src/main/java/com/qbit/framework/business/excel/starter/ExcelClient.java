@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,12 +80,12 @@ public class ExcelClient {
             return this;
         }
 
-        public ExcelExportBuilder<T> column(String header, java.util.function.Function<T, Object> extractor) {
+        public ExcelExportBuilder<T> column(String header, Function<T, Object> extractor) {
             this.descriptors.add(ExcelCellDescriptor.of(header, extractor));
             return this;
         }
 
-        public <R> ExcelExportBuilder<T> column(String header, java.util.function.Function<T, R> extractor, java.util.function.Function<R, ?> converter) {
+        public <R> ExcelExportBuilder<T> column(String header, Function<T, R> extractor, Function<R, ?> converter) {
             this.descriptors.add(ExcelCellDescriptor.of(header, t -> converter.apply(extractor.apply(t))));
             return this;
         }

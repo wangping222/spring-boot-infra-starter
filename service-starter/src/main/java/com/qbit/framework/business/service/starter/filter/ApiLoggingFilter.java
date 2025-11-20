@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
@@ -32,10 +31,7 @@ public class ApiLoggingFilter extends CommonsRequestLoggingFilter implements Ord
     @Override
     protected boolean shouldLog(HttpServletRequest request) {
         Object handler = request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
-        if (isLogIgnored(handler)) {
-            return false;
-        }
-        return true;
+        return !isLogIgnored(handler);
     }
 
     @Override
