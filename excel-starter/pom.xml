@@ -6,11 +6,13 @@
     <parent>
         <groupId>com.qbit.framework</groupId>
         <artifactId>spring-boot-infra-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>excel-starter</artifactId>
+
+    
 
     <dependencies>
         <dependency>
@@ -28,7 +30,6 @@
         <dependency>
             <groupId>com.qbit.framework</groupId>
             <artifactId>service-starter</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
