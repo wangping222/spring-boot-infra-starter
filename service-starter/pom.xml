@@ -17,6 +17,7 @@
         <dependency>
             <groupId>com.qbit.framework</groupId>
             <artifactId>service-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -95,7 +96,7 @@
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>font-asian</artifactId>
+            <artifactId>itext-asian</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
