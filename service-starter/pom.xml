@@ -6,12 +6,11 @@
     <parent>
         <groupId>com.qbit.framework</groupId>
         <artifactId>spring-boot-infra-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>service-starter</artifactId>
-
 
     <dependencies>
         <dependency>
@@ -94,10 +93,12 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itext-asian</artifactId>
         </dependency>
+
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
