@@ -33,7 +33,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.qbit.framework</groupId>
-                <artifactId>infra-dependencies</artifactId>
+                <artifactId>infra-dependencies-bom</artifactId>
                 <version>0.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
