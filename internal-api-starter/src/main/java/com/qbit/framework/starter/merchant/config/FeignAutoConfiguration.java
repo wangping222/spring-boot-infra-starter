@@ -8,6 +8,8 @@ import feign.RequestInterceptor;
 import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import feign.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -77,13 +79,29 @@ public class FeignAutoConfiguration {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(64);
         dispatcher.setMaxRequestsPerHost(16);
-        return new OkHttpClient.Builder()
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
                 .connectionPool(new ConnectionPool(50, 5, TimeUnit.MINUTES))
                 .retryOnConnectionFailure(true)
                 .connectTimeout(properties.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
-                .readTimeout(properties.getReadTimeoutMillis(), TimeUnit.MILLISECONDS)
-                .build();
+                .readTimeout(properties.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
+        if (Boolean.TRUE.equals(properties.getLogEnabled())) {
+            HttpLoggingInterceptor.Logger logger = msg -> org.slf4j.LoggerFactory.getLogger("com.qbit.framework.feign.http").info(msg);
+            HttpLoggingInterceptor.Level level = HttpLoggingInterceptor.Level.BASIC;
+            if (Boolean.TRUE.equals(properties.getLogBody())) {
+                level = HttpLoggingInterceptor.Level.BODY;
+            } else if (Boolean.TRUE.equals(properties.getLogHeaders())) {
+                level = HttpLoggingInterceptor.Level.HEADERS;
+            }
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(logger);
+            logging.setLevel(level);
+            logging.redactHeader("Authorization");
+            logging.redactHeader("X-Sign");
+            logging.redactHeader("Token");
+            logging.redactHeader("Secret");
+            builder.addInterceptor(logging);
+        }
+        return builder.build();
     }
 
     @Bean
@@ -92,5 +110,18 @@ public class FeignAutoConfiguration {
     @ConditionalOnMissingBean(Client.class)
     public Client feignClient(OkHttpClient client) {
         return new feign.okhttp.OkHttpClient(client);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(Logger.Level.class)
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = "log-enabled", havingValue = "true")
+    public Logger.Level feignLoggerLevel(FeignApiProperties properties) {
+        if (Boolean.TRUE.equals(properties.getLogBody())) {
+            return Logger.Level.FULL;
+        }
+        if (Boolean.TRUE.equals(properties.getLogHeaders())) {
+            return Logger.Level.HEADERS;
+        }
+        return Logger.Level.BASIC;
     }
 }

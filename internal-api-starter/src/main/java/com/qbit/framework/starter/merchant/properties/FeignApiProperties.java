@@ -10,7 +10,7 @@ import java.util.List;
 public class FeignApiProperties {
     private Boolean enabled = true;
 
-        private String baseUrl = "https://circle-test.qbitnetwork.com";
+    private String baseUrl = "https://circle-test.qbitnetwork.com";
     private String secret = "6YIJXQkhs9mxOQs+74uIIA==";
 
 //    private String baseUrl;
@@ -22,4 +22,9 @@ public class FeignApiProperties {
     private Boolean verifyEnabled = false;
     private Long signatureWindowMillis = 300000L;
     private List<String> verifyPaths;
+
+    private Boolean logEnabled = true;
+    private Boolean logHeaders = true;
+    private Boolean logBody = false;
+    private Integer logBodyMaxBytes = 2048;
 }
