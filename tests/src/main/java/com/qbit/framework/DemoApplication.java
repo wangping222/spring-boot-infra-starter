@@ -1,19 +1,17 @@
 package com.qbit.framework;
 
 import com.qbit.framework.starter.merchant.EnableInternalApiClients;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
 @SpringBootApplication
-@ConfigurationPropertiesScan
 @EnableInternalApiClients
-public class Application {
+public class DemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(DemoApplication.class, args);
     }
 
 }
