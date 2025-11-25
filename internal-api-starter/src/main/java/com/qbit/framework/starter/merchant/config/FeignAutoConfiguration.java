@@ -85,20 +85,18 @@ public class FeignAutoConfiguration {
                 .retryOnConnectionFailure(true)
                 .connectTimeout(properties.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
                 .readTimeout(properties.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
+
         if (Boolean.TRUE.equals(properties.getLogEnabled())) {
-            HttpLoggingInterceptor.Logger logger = msg -> org.slf4j.LoggerFactory.getLogger("com.qbit.framework.feign.http").info(msg);
-            HttpLoggingInterceptor.Level level = HttpLoggingInterceptor.Level.BASIC;
-            if (Boolean.TRUE.equals(properties.getLogBody())) {
-                level = HttpLoggingInterceptor.Level.BODY;
-            } else if (Boolean.TRUE.equals(properties.getLogHeaders())) {
-                level = HttpLoggingInterceptor.Level.HEADERS;
-            }
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(logger);
+            HttpLoggingInterceptor.Level level = Boolean.TRUE.equals(properties.getLogBody())
+                    ? HttpLoggingInterceptor.Level.BODY
+                    : (Boolean.TRUE.equals(properties.getLogHeaders())
+                    ? HttpLoggingInterceptor.Level.HEADERS
+                    : HttpLoggingInterceptor.Level.BASIC);
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new com.qbit.framework.starter.merchant.logging.SingleLineHttpLogger());
             logging.setLevel(level);
-            logging.redactHeader("Authorization");
-            logging.redactHeader("X-Sign");
-            logging.redactHeader("Token");
-            logging.redactHeader("Secret");
+            for (String h : new String[]{"Authorization", "X-Sign", "Token", "Secret"}) {
+                logging.redactHeader(h);
+            }
             builder.addInterceptor(logging);
         }
         return builder.build();
