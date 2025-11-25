@@ -41,7 +41,9 @@ public class FeignAutoConfiguration {
     public Request.Options merchantFeignOptions(FeignApiProperties properties) {
         return new Request.Options(
                 properties.getConnectTimeoutMillis(),
+                TimeUnit.MILLISECONDS,
                 properties.getReadTimeoutMillis(),
+                TimeUnit.MILLISECONDS,
                 true
         );
     }
