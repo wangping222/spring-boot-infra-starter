@@ -27,6 +27,7 @@
         <module>excel-starter</module>
         <module>service-starter</module>
         <module>service-common</module>
+        <module>tests</module>
     </modules>
 
     <dependencyManagement>
