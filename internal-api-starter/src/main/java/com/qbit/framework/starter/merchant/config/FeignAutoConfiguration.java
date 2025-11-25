@@ -38,12 +38,12 @@ public class FeignAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Request.Options.class)
     @ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public Request.Options merchantFeignOptions(FeignApiProperties properties) {
+    public Request.Options feignRequestOptions(FeignApiProperties properties) {
+        int connectMs = properties.getConnectTimeoutMillis();
+        int readMs = properties.getReadTimeoutMillis();
         return new Request.Options(
-                properties.getConnectTimeoutMillis(),
-                TimeUnit.MILLISECONDS,
-                properties.getReadTimeoutMillis(),
-                TimeUnit.MILLISECONDS,
+                connectMs, TimeUnit.MILLISECONDS,
+                readMs, TimeUnit.MILLISECONDS,
                 true
         );
     }
@@ -79,12 +79,14 @@ public class FeignAutoConfiguration {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(64);
         dispatcher.setMaxRequestsPerHost(16);
+        int connectMs = properties.getConnectTimeoutMillis();
+        int readMs = properties.getReadTimeoutMillis();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
                 .connectionPool(new ConnectionPool(50, 5, TimeUnit.MINUTES))
                 .retryOnConnectionFailure(true)
-                .connectTimeout(properties.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
-                .readTimeout(properties.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
+                .connectTimeout(connectMs, TimeUnit.MILLISECONDS)
+                .readTimeout(readMs, TimeUnit.MILLISECONDS);
 
         if (Boolean.TRUE.equals(properties.getLogEnabled())) {
             HttpLoggingInterceptor.Level level = Boolean.TRUE.equals(properties.getLogBody())
