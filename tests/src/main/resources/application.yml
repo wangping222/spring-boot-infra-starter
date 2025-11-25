@@ -1,5 +1,6 @@
-feign:
-  api:
-    base-url: https://circle-test.qbitnetwork.com
-    secret: 6YIJXQkhs9mxOQs+74uIIA==
-    enabled: true
+server:
+  feign:
+    api:
+      base-url: https://circle-test.qbitnetwork.com
+      secret: 6YIJXQkhs9mxOQs+74uIIA==
+      enabled: true

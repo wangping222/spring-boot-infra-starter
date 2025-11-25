@@ -1,4 +1,4 @@
-package com.qbit.framework.app.feign.api;
+package com.qbit.framework.api;
 
 
 import lombok.Data;

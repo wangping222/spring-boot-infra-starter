@@ -1,4 +1,4 @@
-package com.qbit.framework.app.feign.api;
+package com.qbit.framework.api;
 
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import org.junit.jupiter.api.Test;

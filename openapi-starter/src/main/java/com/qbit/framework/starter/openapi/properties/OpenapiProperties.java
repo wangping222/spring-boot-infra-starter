@@ -4,7 +4,7 @@ package com.qbit.framework.starter.openapi.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "server.starter.openapi")
+@ConfigurationProperties(prefix = "framework.starter.openapi")
 @Data
 public class OpenapiProperties {
 

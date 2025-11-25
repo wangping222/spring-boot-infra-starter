@@ -1,6 +1,6 @@
-package com.qbit.framework.app.feign.service;
+package com.qbit.framework.service;
 
-import com.qbit.framework.app.feign.api.InternalApi;
+import com.qbit.framework.api.InternalApi;
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

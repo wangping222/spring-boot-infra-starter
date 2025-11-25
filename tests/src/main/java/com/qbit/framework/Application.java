@@ -1,4 +1,4 @@
-package com.qbit.framework.app.feign;
+package com.qbit.framework;
 
 import com.qbit.framework.starter.merchant.config.FeignAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
