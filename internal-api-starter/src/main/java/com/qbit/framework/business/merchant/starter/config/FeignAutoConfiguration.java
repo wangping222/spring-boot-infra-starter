@@ -15,8 +15,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 import java.util.concurrent.TimeUnit;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(FeignApiProperties.class)
 @ConditionalOnClass(RequestInterceptor.class)
+@EnableFeignClients
 public class FeignAutoConfiguration {
 
     @Bean
@@ -34,6 +37,7 @@ public class FeignAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
     public Request.Options merchantFeignOptions(FeignApiProperties properties) {
         return new Request.Options(
                 properties.getConnectTimeoutMillis(),
@@ -43,6 +47,7 @@ public class FeignAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
     public BeanFactoryPostProcessor feignClientsUrlPostProcessor(FeignApiProperties properties) {
         return (ConfigurableListableBeanFactory beanFactory) -> {
             String baseUrl = properties.getBaseUrl();
@@ -84,7 +89,7 @@ public class FeignAutoConfiguration {
     @Bean
     @ConditionalOnClass(feign.okhttp.OkHttpClient.class)
     @ConditionalOnProperty(prefix = "feign.api", name = "use-okhttp", havingValue = "true", matchIfMissing = true)
-    @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean(Client.class)
+    @ConditionalOnMissingBean(Client.class)
     public Client feignClient(OkHttpClient client) {
         return new feign.okhttp.OkHttpClient(client);
     }

@@ -9,8 +9,11 @@ import java.util.List;
 @ConfigurationProperties(prefix = "feign.api")
 public class FeignApiProperties {
     private Boolean enabled = true;
+
     private String baseUrl;
+
     private String secret;
+
     private Boolean useOkHttp = true;
     private Integer connectTimeoutMillis = 5000;
     private Integer readTimeoutMillis = 10000;
