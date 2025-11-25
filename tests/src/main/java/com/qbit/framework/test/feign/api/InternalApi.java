@@ -13,6 +13,6 @@ public interface InternalApi {
         private String cardTransactionId;
     }
 
-    @PostMapping("/api/core/internal/webhook/display_transaction-sync")
+    @PostMapping("/api/core/internal/webhook/display-transaction-sync")
     public String transactionSync(@RequestBody SyncTransactionDTO dto);
 }
