@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.concurrent.TimeUnit;
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(FeignApiProperties.class)
 @ConditionalOnClass(RequestInterceptor.class)
 @EnableFeignClients(basePackages = "com.qbit")
