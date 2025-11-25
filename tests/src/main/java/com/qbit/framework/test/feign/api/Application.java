@@ -8,10 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @Slf4j
-@ActiveProfiles("test")
 @SpringBootApplication
 @EnableFeignClients
 @Import({FeignAutoConfiguration.class})
