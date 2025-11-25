@@ -1,16 +1,16 @@
 package com.qbit.framework.test.feign;
 
+import com.qbit.framework.business.merchant.starter.config.FeignAutoConfiguration;
 import com.qbit.framework.test.feign.api.InternalApi;
 import jakarta.annotation.Resource;
-import com.qbit.framework.business.merchant.starter.config.FeignAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
 @SpringBootTest(classes = FeignTest.App.class)
 @Slf4j

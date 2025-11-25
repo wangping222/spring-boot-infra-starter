@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class FeignAutoConfiguration {
 
     @Bean
-    @ConditionalOnProperty(prefix = "feign.api", name = {"account-id", "secret"})
+    @ConditionalOnProperty(prefix = "feign.api", name = {"secret"})
     public RequestInterceptor merchantAuthRequestInterceptor(FeignApiProperties properties) {
         return new InternalRequestInterceptor(properties);
     }
