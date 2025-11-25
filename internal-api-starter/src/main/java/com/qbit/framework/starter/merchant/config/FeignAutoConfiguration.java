@@ -31,13 +31,13 @@ import java.util.concurrent.TimeUnit;
 public class FeignAutoConfiguration {
 
     @Bean
-    @ConditionalOnProperty(prefix = "feign.api", name = {"secret"})
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = {"secret"})
     public RequestInterceptor merchantAuthRequestInterceptor(FeignApiProperties properties) {
         return new InternalRequestInterceptor(properties);
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
     public Request.Options merchantFeignOptions(FeignApiProperties properties) {
         return new Request.Options(
                 properties.getConnectTimeoutMillis(),
@@ -49,7 +49,7 @@ public class FeignAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
     public BeanFactoryPostProcessor feignClientsUrlPostProcessor(FeignApiProperties properties) {
         return (ConfigurableListableBeanFactory beanFactory) -> {
             String baseUrl = properties.getBaseUrl();
@@ -74,7 +74,7 @@ public class FeignAutoConfiguration {
 
     @Bean
     @ConditionalOnClass(feign.okhttp.OkHttpClient.class)
-    @ConditionalOnProperty(prefix = "feign.api", name = "use-okhttp", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = "use-okhttp", havingValue = "true", matchIfMissing = true)
     public OkHttpClient okHttpClient(FeignApiProperties properties) {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(64);
@@ -90,7 +90,7 @@ public class FeignAutoConfiguration {
 
     @Bean
     @ConditionalOnClass(feign.okhttp.OkHttpClient.class)
-    @ConditionalOnProperty(prefix = "feign.api", name = "use-okhttp", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = "use-okhttp", havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(Client.class)
     public Client feignClient(OkHttpClient client) {
         return new feign.okhttp.OkHttpClient(client);
