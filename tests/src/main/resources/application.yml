@@ -1,4 +1,4 @@
-server:
+framework:
   feign:
     api:
       base-url: https://circle-test.qbitnetwork.com
