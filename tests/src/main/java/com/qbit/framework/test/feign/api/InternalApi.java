@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "internalApi")
+@FeignClient(name = "internalApi", url = "${feign.api.base-url}")
 public interface InternalApi {
     @Data
     public static class SyncTransactionDTO {
