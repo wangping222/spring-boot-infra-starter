@@ -1,7 +1,7 @@
 package com.qbit.framework.app.feign.service;
 
 import com.qbit.framework.app.feign.api.InternalApi;
-import com.qbit.framework.business.merchant.starter.properties.FeignApiProperties;
+import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

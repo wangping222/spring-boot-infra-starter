@@ -1,6 +1,6 @@
 package com.qbit.framework.app.feign.api;
 
-import com.qbit.framework.business.merchant.starter.properties.FeignApiProperties;
+import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

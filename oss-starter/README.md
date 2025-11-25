@@ -57,8 +57,10 @@ oss:
 ### 使用示例
 
 ```java
-import com.qbit.framework.business.oss.starter.core.OssTemplate;
+import core.com.qbit.framework.starter.oss.OssTemplate;
+import com.qbit.framework.starter.oss.core.OssFactory;
 import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.time.Duration;
 import java.net.URL;
@@ -66,9 +68,9 @@ import java.net.URL;
 @Service
 public class FileService {
     private final OssTemplate ossTemplate; // 默认模板（来自 default 或首个配置）
-    private final com.qbit.framework.business.oss.starter.core.OssFactory ossFactory; // 多实例工厂
+    private final core.com.qbit.framework.starter.oss.OssFactory ossFactory; // 多实例工厂
 
-    public FileService(OssTemplate ossTemplate, com.qbit.framework.business.oss.starter.core.OssFactory ossFactory) {
+    public FileService(OssTemplate ossTemplate, core.com.qbit.framework.starter.oss.OssFactory ossFactory) {
         this.ossTemplate = ossTemplate;
         this.ossFactory = ossFactory;
     }

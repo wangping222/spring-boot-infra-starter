@@ -1,1 +1,1 @@
-com.qbit.framework.business.merchant.starter.config.FeignAutoConfiguration
+com.qbit.framework.starter.merchant.config.FeignAutoConfiguration

@@ -23,12 +23,12 @@ trace:
 - try-with-resources 作用域：
 
 ```java
-import com.qbit.framework.business.trace.starter.core.MdcScope;
-import com.qbit.framework.business.trace.starter.TraceUtils;
+import core.com.qbit.framework.starter.trace.MdcScope;
+import com.qbit.framework.starter.trace.TraceUtils;
 
-try (var scope = MdcScope.with("traceId", TraceUtils.newId())) {
-    // 业务逻辑，日志自动带上 traceId
-}
+try(var scope = MdcScope.with("traceId", TraceUtils.newId())){
+        // 业务逻辑，日志自动带上 traceId
+        }
 ```
 
 - Web 自动传播：
