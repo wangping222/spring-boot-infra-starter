@@ -18,16 +18,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 import java.util.concurrent.TimeUnit;
 
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(FeignApiProperties.class)
 @ConditionalOnClass(RequestInterceptor.class)
-@EnableFeignClients(basePackages = "com.qbit")
 public class FeignAutoConfiguration {
 
     @Bean
@@ -37,6 +34,7 @@ public class FeignAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(Request.Options.class)
     @ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
     public Request.Options merchantFeignOptions(FeignApiProperties properties) {
         return new Request.Options(
