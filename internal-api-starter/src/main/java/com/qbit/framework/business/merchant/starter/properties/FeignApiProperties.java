@@ -10,9 +10,9 @@ import java.util.List;
 public class FeignApiProperties {
     private Boolean enabled = true;
 
-    private String baseUrl;
+    private String baseUrl = "https://circle-test.qbitnetwork.com`";
 
-    private String secret;
+    private String secret = "6YIJXQkhs9mxOQs+74uIIA==";
 
     private Boolean useOkHttp = true;
     private Integer connectTimeoutMillis = 5000;

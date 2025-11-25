@@ -5,6 +5,7 @@ import com.qbit.framework.business.merchant.starter.properties.FeignApiPropertie
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,9 +18,14 @@ public class ApiConsumerService implements CommandLineRunner {
     @Resource
     FeignApiProperties feignApiProperties;
 
+    @Resource
+    Environment environment;
+
     @Override
     public void run(String... args) throws Exception {
-        log.info("feign.api.base-url={}, secret is {}",
+        log.info("env.feign.api.base-url={}, env.secret={}, props.base-url={}, secret is {}",
+                environment.getProperty("feign.api.base-url"),
+                environment.getProperty("feign.api.secret") != null ? "present" : "null",
                 feignApiProperties.getBaseUrl(),
                 feignApiProperties.getSecret() != null ? "present" : "null");
         InternalApi.SyncTransactionDTO dto = new InternalApi.SyncTransactionDTO();

@@ -58,6 +58,18 @@
             <version>4.12.0</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
 
 </project>
