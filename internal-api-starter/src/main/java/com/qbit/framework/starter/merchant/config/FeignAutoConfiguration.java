@@ -63,29 +63,28 @@ public class FeignAutoConfiguration {
      * @param properties 框架配置（framework.feign.api）
      * @return BeanFactoryPostProcessor
      */
-    @Bean
-    @ConditionalOnProperty(prefix = "framework.feign.api", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public BeanFactoryPostProcessor feignClientsUrlPostProcessor(FeignApiProperties properties) {
-        return (ConfigurableListableBeanFactory beanFactory) -> {
-            String baseUrl = properties.getBaseUrl();
-            if (StringUtils.isEmpty(baseUrl)) {
-                return;
-            }
-            for (String name : beanFactory.getBeanDefinitionNames()) {
-                var bd = beanFactory.getBeanDefinition(name);
-                String beanClassName = bd.getBeanClassName();
-                if (!"org.springframework.cloud.openfeign.FeignClientFactoryBean".equals(beanClassName)) {
-                    continue;
-                }
-                MutablePropertyValues pvs = bd.getPropertyValues();
-                PropertyValue urlPv = pvs.getPropertyValue("url");
-                String existingUrl = urlPv != null ? String.valueOf(urlPv.getValue()) : null;
-                if (StringUtils.isEmpty(existingUrl)) {
-                    pvs.add("url", baseUrl);
-                }
-            }
-        };
-    }
+//    @Bean
+//    public BeanFactoryPostProcessor feignClientsUrlPostProcessor(FeignApiProperties properties) {
+//        return (ConfigurableListableBeanFactory beanFactory) -> {
+//            String baseUrl = properties.getBaseUrl();
+//            if (StringUtils.isEmpty(baseUrl)) {
+//                return;
+//            }
+//            for (String name : beanFactory.getBeanDefinitionNames()) {
+//                var bd = beanFactory.getBeanDefinition(name);
+//                String beanClassName = bd.getBeanClassName();
+//                if (!"org.springframework.cloud.openfeign.FeignClientFactoryBean".equals(beanClassName)) {
+//                    continue;
+//                }
+//                MutablePropertyValues pvs = bd.getPropertyValues();
+//                PropertyValue urlPv = pvs.getPropertyValue("url");
+//                String existingUrl = urlPv != null ? String.valueOf(urlPv.getValue()) : null;
+//                if (StringUtils.isEmpty(existingUrl)) {
+//                    pvs.add("url", baseUrl);
+//                }
+//            }
+//        };
+//    }
 
     /**
      * 构建 OkHttpClient（连接池、超时、可选日志拦截）。
