@@ -3,44 +3,46 @@ package com.qbit.framework.starter.merchant.config;
 import com.qbit.framework.starter.merchant.interceptor.InternalRequestInterceptor;
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import feign.Client;
+import feign.Logger;
 import feign.Request;
 import feign.RequestInterceptor;
 import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import feign.Logger;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.util.concurrent.TimeUnit;
 
 @AutoConfiguration
 @EnableConfigurationProperties(FeignApiProperties.class)
 @ConditionalOnClass(RequestInterceptor.class)
+@Import(
+        FeignClientUrlPostProcessor.class
+)
 public class FeignAutoConfiguration {
 
     /**
      * 创建内部 API 请求签名拦截器。
-     * 
+     *
      * @param properties 框架配置（framework.feign.api）
      * @return 请求拦截器
      */
     @Bean
-    @ConditionalOnProperty(prefix = "framework.feign.api", name = { "secret" })
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = {"secret"})
     public RequestInterceptor merchantAuthRequestInterceptor(FeignApiProperties properties) {
         return new InternalRequestInterceptor(properties);
     }
 
     /**
      * 提供 Feign 请求选项（超时与是否跟随重定向）。
-     * 
+     *
      * @param properties 框架配置（framework.feign.api）
      * @return Feign 的 Request.Options
      */
@@ -58,7 +60,7 @@ public class FeignAutoConfiguration {
 
     /**
      * 构建 OkHttpClient（连接池、超时、可选日志拦截）。
-     * 
+     *
      * @param properties 框架配置（framework.feign.api）
      * @return OkHttpClient
      */
@@ -85,7 +87,7 @@ public class FeignAutoConfiguration {
 
     /**
      * 使用 OkHttpClient 作为 Feign Client。
-     * 
+     *
      * @param client OkHttpClient 实例
      * @return Feign Client
      */
@@ -99,7 +101,7 @@ public class FeignAutoConfiguration {
 
     /**
      * 提供 Feign Logger.Level，便于与 OkHttp 日志级别保持一致。
-     * 
+     *
      * @param properties 框架配置（framework.feign.api）
      * @return 日志级别
      */
@@ -118,7 +120,7 @@ public class FeignAutoConfiguration {
 
     /**
      * 构建 HttpLoggingInterceptor：选择日志级别并对敏感头脱敏。
-     * 
+     *
      * @param properties 框架配置（framework.feign.api）
      * @return HttpLoggingInterceptor
      */
@@ -126,12 +128,12 @@ public class FeignAutoConfiguration {
         HttpLoggingInterceptor.Level level = Boolean.TRUE.equals(properties.getLogBody())
                 ? HttpLoggingInterceptor.Level.BODY
                 : (Boolean.TRUE.equals(properties.getLogHeaders())
-                        ? HttpLoggingInterceptor.Level.HEADERS
-                        : HttpLoggingInterceptor.Level.BASIC);
+                ? HttpLoggingInterceptor.Level.HEADERS
+                : HttpLoggingInterceptor.Level.BASIC);
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
                 new com.qbit.framework.starter.merchant.logging.SingleLineHttpLogger());
         logging.setLevel(level);
-        for (String h : new String[] { "Authorization", "X-Sign", "Token", "Secret" }) {
+        for (String h : new String[]{"Authorization", "X-Sign", "Token", "Secret"}) {
             logging.redactHeader(h);
         }
         return logging;

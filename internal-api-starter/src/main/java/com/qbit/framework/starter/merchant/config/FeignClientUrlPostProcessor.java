@@ -5,7 +5,9 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 /**
  * Feign Client URL 后置处理器。
@@ -17,6 +19,7 @@ import org.springframework.core.env.Environment;
  *
  * @author framework
  */
+@ConditionalOnProperty(prefix = "framework.feign.api", name = "base-url")
 public class FeignClientUrlPostProcessor implements BeanFactoryPostProcessor {
 
     private static final String FEIGN_CLIENT_FACTORY_BEAN = "org.springframework.cloud.openfeign.FeignClientFactoryBean";
