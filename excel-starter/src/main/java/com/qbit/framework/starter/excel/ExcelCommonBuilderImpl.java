@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.excel;
+package com.qbit.framework.starter.excel;
 
 import com.alibaba.excel.context.WriteContext;
 import com.alibaba.excel.context.WriteContextImpl;
@@ -43,7 +43,8 @@ public class ExcelCommonBuilderImpl implements ExcelBuilder {
         addContent(data, writeSheet, null, null);
     }
 
-    public <T> void addContent(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable, ExcelRowHandleFunction<T> function) {
+    public <T> void addContent(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable,
+            ExcelRowHandleFunction<T> function) {
         try {
             context.currentSheet(writeSheet, WriteTypeEnum.ADD);
             context.currentTable(writeTable);

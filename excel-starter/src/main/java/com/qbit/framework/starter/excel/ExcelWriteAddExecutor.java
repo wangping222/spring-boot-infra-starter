@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.excel;
+package com.qbit.framework.starter.excel;
 
 import com.alibaba.excel.context.WriteContext;
 import com.alibaba.excel.util.WorkBookUtil;
@@ -38,7 +38,8 @@ public class ExcelWriteAddExecutor extends AbstractExcelWriteExecutor {
         }
     }
 
-    private <T> void addOneRowOfDataToExcel(T oneRowData, int rowIndex, int relativeRowIndex, ExcelRowHandleFunction<T> function) {
+    private <T> void addOneRowOfDataToExcel(T oneRowData, int rowIndex, int relativeRowIndex,
+            ExcelRowHandleFunction<T> function) {
         if (oneRowData == null) {
             return;
         }

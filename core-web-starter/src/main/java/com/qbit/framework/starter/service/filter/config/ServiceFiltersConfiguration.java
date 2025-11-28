@@ -3,7 +3,6 @@ package com.qbit.framework.starter.service.filter.config;
 import com.qbit.framework.starter.service.filter.ApiLoggingFilter;
 import com.qbit.framework.starter.service.filter.ContentCachingRequestFilter;
 import com.qbit.framework.starter.service.filter.ErrorHandlingFilter;
-import com.qbit.framework.starter.service.filter.TraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,12 +10,6 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @EnableConfigurationProperties(ServiceFiltersProperties.class)
 public class ServiceFiltersConfiguration {
-
-    @Bean
-    @ConditionalOnServiceFilter("trace")
-    public TraceFilter traceFilter() {
-        return new TraceFilter();
-    }
 
     @Bean
     @ConditionalOnServiceFilter("content-caching")

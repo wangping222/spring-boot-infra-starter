@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.excel;
+package com.qbit.framework.starter.excel;
 
 import lombok.Data;
 

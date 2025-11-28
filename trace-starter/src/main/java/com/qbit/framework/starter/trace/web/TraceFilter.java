@@ -1,6 +1,6 @@
-package com.qbit.framework.starter.service.filter;
+package com.qbit.framework.starter.trace.web;
 
-import com.qbit.framework.starter.service.trace.MdcTraceContext;
+import com.qbit.framework.starter.trace.context.MdcTraceContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ public class TraceFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+            FilterChain chain) throws ServletException, IOException {
         String traceId = getOrCreateTraceId(request);
         response.setHeader(TRACE_ID, traceId);
         try (MdcTraceContext ignored = MdcTraceContext.put(TRACE_ID, traceId)) {

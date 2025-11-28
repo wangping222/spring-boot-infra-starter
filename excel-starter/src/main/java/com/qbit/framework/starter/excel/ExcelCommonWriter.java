@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.excel;
+package com.qbit.framework.starter.excel;
 
 import com.alibaba.excel.context.WriteContext;
 import com.alibaba.excel.write.metadata.WriteSheet;
@@ -37,7 +37,8 @@ public class ExcelCommonWriter {
      * @param writeTable Write to this table
      * @return this
      */
-    public <T> ExcelCommonWriter write(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable, ExcelRowHandleFunction<T> function) {
+    public <T> ExcelCommonWriter write(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable,
+            ExcelRowHandleFunction<T> function) {
         excelBuilder.addContent(data, writeSheet, writeTable, function);
         return this;
     }

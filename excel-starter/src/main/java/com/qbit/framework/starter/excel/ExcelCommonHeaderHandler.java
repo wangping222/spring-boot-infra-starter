@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.excel;
+package com.qbit.framework.starter.excel;
 
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
@@ -29,7 +29,7 @@ public class ExcelCommonHeaderHandler implements SheetWriteHandler {
         for (int i = 0; i < headers.length; i++) {
             String header = headers[i];
             Cell cell = row.createCell(i);
-            //设置单元格内容
+            // 设置单元格内容
             cell.setCellValue(header);
         }
         writeSheetHolder.setNeedHead(false);

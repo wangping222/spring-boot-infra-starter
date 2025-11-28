@@ -15,6 +15,8 @@
     <packaging>pom</packaging>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <revision>0.0.1-SNAPSHOT</revision>
     </properties>
 
@@ -25,8 +27,9 @@
         <module>xxljob-starter</module>
         <module>trace-starter</module>
         <module>excel-starter</module>
-        <module>service-starter</module>
+        <module>core-web-starter</module>
         <module>service-common</module>
+        <module>pdf-starter</module>
         <module>tests</module>
     </modules>
 
@@ -72,6 +75,11 @@
             <dependency>
                 <groupId>com.qbit.framework</groupId>
                 <artifactId>excel-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qbit.framework</groupId>
+                <artifactId>pdf-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

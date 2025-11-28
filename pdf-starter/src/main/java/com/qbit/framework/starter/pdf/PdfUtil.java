@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service;
+package com.qbit.framework.starter.pdf;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
@@ -6,7 +6,6 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.font.FontProvider;
-import com.qbit.framework.starter.service.exception.CustomerException;
 import lombok.experimental.UtilityClass;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -61,7 +60,7 @@ public class PdfUtil {
             HtmlConverter.convertToPdf(writer.toString(), pdfDocument, properties);
             pdfDocument.close();
         } catch (Exception e) {
-            throw new CustomerException("PFD文件生成失败");
+            throw new RuntimeException("PFD文件生成失败", e);
         }
     }
 
@@ -92,7 +91,7 @@ public class PdfUtil {
             HtmlConverter.convertToPdf(totalWriter.toString(), pdfDocument, properties);
             pdfDocument.close();
         } catch (Exception e) {
-            throw new CustomerException("PFD文件生成失败");
+            throw new RuntimeException("PFD文件生成失败", e);
         }
     }
 
