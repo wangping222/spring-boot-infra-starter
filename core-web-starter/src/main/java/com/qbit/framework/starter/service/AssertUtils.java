@@ -1,6 +1,6 @@
 package com.qbit.framework.starter.service;
 
-import com.qbit.framework.starter.service.exception.CustomerException;
+import com.qbit.framework.starter.service.exception.type.CustomerException;
 import com.qbit.framework.starter.service.message.MessagePlaceholder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;

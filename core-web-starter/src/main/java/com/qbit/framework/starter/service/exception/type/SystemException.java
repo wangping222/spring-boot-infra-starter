@@ -1,18 +1,13 @@
-package com.qbit.framework.starter.service.exception;
+package com.qbit.framework.starter.service.exception.type;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 系统异常
- */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SystemException extends RuntimeException {
 
-    // 错误码
     private String code;
-    // 错误信息
     private String message;
 
     public SystemException(String code, String message) {

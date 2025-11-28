@@ -1,13 +1,11 @@
-package com.qbit.framework.starter.service.exception;
+package com.qbit.framework.starter.service.exception.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @Getter
 @AllArgsConstructor
 public enum DefaultExceptionCode implements ExceptionCode {
-
 
     BAD_REQUEST("400", "请求不合法"),
 

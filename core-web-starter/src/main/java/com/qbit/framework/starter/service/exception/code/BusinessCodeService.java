@@ -1,12 +1,7 @@
-package com.qbit.framework.starter.service.exception;
-
-
+package com.qbit.framework.starter.service.exception.code;
 
 import java.util.List;
 
-/**
- * 业务状态码
- */
 public interface BusinessCodeService {
 
     List<BusinessCodeDTO> list(String code);
