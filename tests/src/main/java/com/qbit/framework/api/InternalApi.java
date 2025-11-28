@@ -1,6 +1,7 @@
 package com.qbit.framework.api;
 
 
+import com.qbit.framework.common.web.Result;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,5 +15,5 @@ public interface InternalApi {
     }
 
     @PostMapping("/api/core/internal/webhook/display-transaction-sync")
-    public String transactionSync(@RequestBody SyncTransactionDTO dto);
+    Result<?> transactionSync(@RequestBody SyncTransactionDTO dto);
 }

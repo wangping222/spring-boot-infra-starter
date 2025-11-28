@@ -1,6 +1,7 @@
 package com.qbit.framework.service;
 
 import com.qbit.framework.api.InternalApi;
+import com.qbit.framework.common.web.Result;
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class ApiConsumerService implements CommandLineRunner {
                 feignApiProperties.getSecret() != null ? "present" : "null");
         InternalApi.SyncTransactionDTO dto = new InternalApi.SyncTransactionDTO();
         dto.setCardTransactionId("5d2a539e-060b-47e9-b292-dcfa63cf9857");
-        String s = internalApi.transactionSync(dto);
+        Result<?> s = internalApi.transactionSync(dto);
         log.info("transaction sync: {}", s);
     }
 }
