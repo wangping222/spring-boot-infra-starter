@@ -23,9 +23,7 @@ import java.util.concurrent.TimeUnit;
 @AutoConfiguration
 @EnableConfigurationProperties(FeignApiProperties.class)
 @ConditionalOnClass(RequestInterceptor.class)
-@Import(
-        FeignClientUrlPostProcessor.class
-)
+@Import(FeignClientUrlPostProcessor.class)
 public class FeignAutoConfiguration {
 
     /**
@@ -35,9 +33,22 @@ public class FeignAutoConfiguration {
      * @return 请求拦截器
      */
     @Bean
-    @ConditionalOnProperty(prefix = "framework.feign.api", name = {"secret"})
+    @ConditionalOnProperty(prefix = "framework.feign.api", name = { "secret" })
     public RequestInterceptor merchantAuthRequestInterceptor(FeignApiProperties properties) {
         return new InternalRequestInterceptor(properties);
+    }
+
+    /**
+     * 创建 Feign 链路追踪拦截器。
+     * 自动将当前线程的 traceId 和 spanId 传递到下游服务。
+     *
+     * @return 链路追踪拦截器
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "feignTraceInterceptor")
+    @ConditionalOnClass(name = "com.qbit.framework.starter.trace.TraceUtils")
+    public RequestInterceptor feignTraceInterceptor() {
+        return new com.qbit.framework.starter.merchant.interceptor.FeignTraceInterceptor();
     }
 
     /**
@@ -128,12 +139,12 @@ public class FeignAutoConfiguration {
         HttpLoggingInterceptor.Level level = Boolean.TRUE.equals(properties.getLogBody())
                 ? HttpLoggingInterceptor.Level.BODY
                 : (Boolean.TRUE.equals(properties.getLogHeaders())
-                ? HttpLoggingInterceptor.Level.HEADERS
-                : HttpLoggingInterceptor.Level.BASIC);
+                        ? HttpLoggingInterceptor.Level.HEADERS
+                        : HttpLoggingInterceptor.Level.BASIC);
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
                 new com.qbit.framework.starter.merchant.logging.SingleLineHttpLogger());
         logging.setLevel(level);
-        for (String h : new String[]{"Authorization", "X-Sign", "Token", "Secret"}) {
+        for (String h : new String[] { "Authorization", "X-Sign", "Token", "Secret" }) {
             logging.redactHeader(h);
         }
         return logging;

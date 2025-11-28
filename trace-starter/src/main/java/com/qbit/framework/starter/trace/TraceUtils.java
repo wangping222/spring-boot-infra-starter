@@ -7,10 +7,16 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class TraceUtils {
+    // MDC 中的 key
     public static final String TRACE_ID = "traceId";
     public static final String SPAN_ID = "spanId";
 
-    private TraceUtils() {}
+    // HTTP 请求头名称
+    public static final String TRACE_ID_HEADER = "X-Trace-Id";
+    public static final String SPAN_ID_HEADER = "X-Span-Id";
+
+    private TraceUtils() {
+    }
 
     public static String newId() {
         return UUID.randomUUID().toString();
@@ -46,4 +52,3 @@ public final class TraceUtils {
         return m;
     }
 }
-

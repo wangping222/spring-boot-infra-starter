@@ -10,11 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class TraceInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String traceId = headerFirst(request, "X-Trace-Id", "Trace-Id", "traceId");
+        String traceId = headerFirst(request, TraceUtils.TRACE_ID_HEADER, "Trace-Id", "traceId");
         if (traceId == null || traceId.isBlank()) {
             traceId = TraceUtils.newId();
         }
-        String spanId = headerFirst(request, "X-Span-Id", "Span-Id", "spanId");
+        String spanId = headerFirst(request, TraceUtils.SPAN_ID_HEADER, "Span-Id", "spanId");
         if (spanId == null || spanId.isBlank()) {
             spanId = TraceUtils.newId();
         }
@@ -23,7 +23,8 @@ public class TraceInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+            Exception ex) {
         MDC.remove(TraceUtils.TRACE_ID);
         MDC.remove(TraceUtils.SPAN_ID);
     }
@@ -38,4 +39,3 @@ public class TraceInterceptor implements HandlerInterceptor {
         return null;
     }
 }
-

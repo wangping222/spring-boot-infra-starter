@@ -42,6 +42,10 @@ framework:
 
 - 签名拦截：自动为请求附加签名头（`x-sign`、`x-nonce-str`、`x-timestamp`），当 `framework.feign.api.secret` 存在时生效。
 - 统一地址：当客户端未设置 `@FeignClient(url=...)` 且配置了 `framework.feign.api.base-url` 时，为该客户端绑定统一地址。
+- **链路追踪**：自动传递 `X-Trace-Id` 和 `X-Span-Id` 请求头到下游服务，实现分布式链路追踪。
+  - 依赖 `trace-starter` 模块，自动从 MDC 中获取当前的 traceId 和 spanId
+  - 为每个下游请求生成新的 spanId，保持 traceId 不变
+  - 在 DEBUG 日志级别下记录链路追踪信息
 - 超时配置：
   - Feign Options：`framework.feign.api.connect-timeout-millis`、`framework.feign.api.read-timeout-millis`
   - OkHttp Client：与上述保持一致

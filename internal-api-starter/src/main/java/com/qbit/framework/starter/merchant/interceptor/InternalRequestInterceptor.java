@@ -1,17 +1,18 @@
 package com.qbit.framework.starter.merchant.interceptor;
 
-import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import com.qbit.framework.common.encrypt.ShaUtil;
+import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
-
 /**
  * 内部API请求拦截器
  */
+@Slf4j
 public class InternalRequestInterceptor implements RequestInterceptor {
     private final FeignApiProperties properties;
 
