@@ -25,6 +25,10 @@
         </dependency>
         <dependency>
             <groupId>com.qbit.framework</groupId>
+            <artifactId>service-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.qbit.framework</groupId>
             <artifactId>trace-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
