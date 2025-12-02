@@ -20,7 +20,7 @@ public class ServiceFiltersConfiguration {
     @Bean
     @ConditionalOnServiceFilter("content-caching")
     @ConditionalOnMissingBean(name = "contentCachingRequestFilter")
-    public FilterRegistrationBean<ContentCachingRequestFilter> contentCachingRequestFilter() {
+    public FilterRegistrationBean<ContentCachingRequestFilter> contentCachingRequestFilterRegistration() {
         FilterRegistrationBean<ContentCachingRequestFilter> r = new FilterRegistrationBean<>(new ContentCachingRequestFilter());
         r.setName("contentCachingRequestFilter");
         r.addUrlPatterns("/*");
@@ -31,7 +31,7 @@ public class ServiceFiltersConfiguration {
     @Bean
     @ConditionalOnServiceFilter("error-handling")
     @ConditionalOnMissingBean(name = "errorHandlingFilter")
-    public FilterRegistrationBean<ErrorHandlingFilter> errorHandlingFilter() {
+    public FilterRegistrationBean<ErrorHandlingFilter> errorHandlingFilterRegistration() {
         FilterRegistrationBean<ErrorHandlingFilter> r = new FilterRegistrationBean<>(new ErrorHandlingFilter());
         r.setName("errorHandlingFilter");
         r.addUrlPatterns("/*");
@@ -42,7 +42,7 @@ public class ServiceFiltersConfiguration {
     @Bean
     @ConditionalOnServiceFilter("api-logging")
     @ConditionalOnMissingBean(name = "apiLoggingFilter")
-    public FilterRegistrationBean<ApiLoggingFilter> apiLoggingFilter() {
+    public FilterRegistrationBean<ApiLoggingFilter> apiLoggingFilterRegistration() {
         FilterRegistrationBean<ApiLoggingFilter> r = new FilterRegistrationBean<>(new ApiLoggingFilter());
         r.setName("apiLoggingFilter");
         r.addUrlPatterns("/*");
