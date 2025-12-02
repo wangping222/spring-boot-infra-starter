@@ -53,6 +53,10 @@
             <artifactId>internal-api-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.qbit.framework</groupId>
+            <artifactId>core-web-starter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>

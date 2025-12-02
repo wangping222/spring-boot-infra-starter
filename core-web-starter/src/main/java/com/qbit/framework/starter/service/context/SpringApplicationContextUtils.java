@@ -7,12 +7,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-@Component
 public class SpringApplicationContextUtils implements ApplicationContextAware {
 
     private static final AtomicReference<ApplicationContext> CONTEXT_HOLDER = new AtomicReference<>();

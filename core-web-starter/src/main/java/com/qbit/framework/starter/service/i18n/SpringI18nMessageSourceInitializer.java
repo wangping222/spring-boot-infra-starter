@@ -4,10 +4,10 @@ import com.qbit.framework.starter.service.initializer.SystemInitializer;
 import com.qbit.framework.starter.service.request.HttpServletRequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.Locale;
@@ -17,7 +17,6 @@ import java.util.Locale;
  * spring i18n 国际化支持 初始化器
  **/
 @Slf4j
-@Component
 public class SpringI18nMessageSourceInitializer implements SystemInitializer {
 
 

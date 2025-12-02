@@ -87,6 +87,11 @@
                 <artifactId>internal-api-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.qbit.framework</groupId>
+                <artifactId>core-web-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

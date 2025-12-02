@@ -5,7 +5,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.OrderComparator;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 用于在应用启动时执行系统初始化任务
  */
 @Slf4j
-@Component
 public class ApplicationStartedListener implements ApplicationListener<ApplicationStartedEvent> {
     /**
      * 初始化状态标记，用于确保初始化只执行一次
