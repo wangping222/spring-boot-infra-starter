@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>com.qbit.framework</groupId>
-            <artifactId>service-starter</artifactId>
+            <artifactId>core-web-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.qbit.framework</groupId>

@@ -28,10 +28,6 @@
             <artifactId>easyexcel</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.qbit.framework</groupId>
-            <artifactId>service-starter</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
