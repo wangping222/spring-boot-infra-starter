@@ -4,3 +4,6 @@ framework:
       base-url: https://circle-test.qbitnetwork.com
       secret: 6YIJXQkhs9mxOQs+74uIIA==
       enabled: true
+spring:
+  application:
+    name: tests
