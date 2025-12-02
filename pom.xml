@@ -22,7 +22,7 @@
 
     <modules>
         <module>internal-api-starter</module>
-        <module>openapi-starter</module>
+<!--        <module>openapi-starter</module>-->
         <module>oss-starter</module>
         <module>xxljob-starter</module>
         <module>trace-starter</module>
