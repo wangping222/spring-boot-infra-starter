@@ -7,7 +7,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class ExceptionCodeInitializer implements SystemInitializer {
     @Override
     public boolean requireInitialize() {
