@@ -1,6 +1,7 @@
 package com.qbit.framework.starter.service.filter;
 
 import com.qbit.framework.starter.service.annotations.LogIgnore;
+import com.qbit.framework.starter.service.filter.content.CachedBodyHttpServletRequest;
 import com.qbit.framework.starter.service.filter.order.WebFilterOrdered;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

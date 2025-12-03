@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.filter;
+package com.qbit.framework.starter.service.filter.content;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

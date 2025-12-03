@@ -1,7 +1,7 @@
 package com.qbit.framework.starter.service.filter.config;
 
 import com.qbit.framework.starter.service.filter.ApiLoggingFilter;
-import com.qbit.framework.starter.service.filter.ContentCachingRequestFilter;
+import com.qbit.framework.starter.service.filter.content.ContentCachingRequestFilter;
 import com.qbit.framework.starter.service.filter.ErrorHandlingFilter;
 import com.qbit.framework.starter.service.filter.order.WebFilterOrdered;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.core.Ordered;
 
 @AutoConfiguration
 @EnableConfigurationProperties(ServiceFiltersProperties.class)
