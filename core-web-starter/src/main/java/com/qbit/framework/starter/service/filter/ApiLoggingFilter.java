@@ -2,7 +2,10 @@ package com.qbit.framework.starter.service.filter;
 
 import com.qbit.framework.starter.service.annotations.LogIgnore;
 import com.qbit.framework.starter.service.filter.order.WebFilterOrdered;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -10,6 +13,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
+
+import java.io.IOException;
 
 /**
  * 简化版接口调用日志过滤器
@@ -35,10 +40,29 @@ public class ApiLoggingFilter extends CommonsRequestLoggingFilter implements Ord
     }
 
     @Override
-    protected void afterRequest(HttpServletRequest request, String message) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        boolean isFirstRequest = !isAsyncDispatch(request);
+
+        boolean shouldLog = shouldLog(request);
+        if (shouldLog && isFirstRequest) {
+            beforeRequest(request, createMessage(request, "", ""));
+        }
+        filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected void beforeRequest(HttpServletRequest request, String message) {
         log.info(message);
     }
 
+    @Override
+    protected String getMessagePayload(HttpServletRequest request) {
+        if (request instanceof CachedBodyHttpServletRequest caRequest) {
+            return caRequest.getContentAsString();
+        }
+        return null;
+    }
 
     private boolean isLogIgnored(Object handler) {
         if (handler instanceof HandlerMethod) {

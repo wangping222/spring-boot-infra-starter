@@ -33,9 +33,9 @@ public class ContentCachingRequestFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
+        byte[] bytes = request.getInputStream().readAllBytes();
         // 包装请求，使其支持重复读取
-        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+        CachedBodyHttpServletRequest wrappedRequest = new CachedBodyHttpServletRequest(request, bytes);
         filterChain.doFilter(wrappedRequest, response);
     }
 }
