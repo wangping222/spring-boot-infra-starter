@@ -1,8 +1,7 @@
 package com.qbit.framework.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -26,5 +25,11 @@ public class TestController {
         log.info("银行卡号: 6222021234567891234");
 
         return "日志已输出,请查看控制台";
+    }
+
+    @PostMapping("post-log")
+    public String testPostLog(@RequestBody UserDTO userDTO) {
+
+        return "hello";
     }
 }

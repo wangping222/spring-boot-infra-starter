@@ -42,8 +42,9 @@ public class ServiceFiltersConfiguration {
     @Bean
     @ConditionalOnServiceFilter("api-logging")
     @ConditionalOnMissingBean(name = "apiLoggingFilter")
-    public FilterRegistrationBean<ApiLoggingFilter> apiLoggingFilterRegistration() {
-        FilterRegistrationBean<ApiLoggingFilter> r = new FilterRegistrationBean<>(new ApiLoggingFilter());
+    public FilterRegistrationBean<ApiLoggingFilter> apiLoggingFilterRegistration(ServiceFiltersProperties properties) {
+        ApiLoggingFilter filter = new ApiLoggingFilter();
+        FilterRegistrationBean<ApiLoggingFilter> r = new FilterRegistrationBean<>(filter);
         r.setName("apiLoggingFilter");
         r.addUrlPatterns("/*");
         r.setOrder(WebFilterOrdered.ApiLoggingFilter.getOrder());
