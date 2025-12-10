@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.message;
+package com.qbit.framework.common.toolkits.message;
 
 
 import org.apache.commons.lang3.ObjectUtils;

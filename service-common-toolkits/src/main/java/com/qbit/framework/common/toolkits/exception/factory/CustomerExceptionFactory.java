@@ -1,13 +1,13 @@
-package com.qbit.framework.starter.service.exception.factory;
+package com.qbit.framework.common.toolkits.exception.factory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.qbit.framework.starter.service.exception.code.BusinessCodeDTO;
-import com.qbit.framework.starter.service.exception.code.BusinessCodeService;
-import com.qbit.framework.starter.service.exception.code.DefaultExceptionCode;
-import com.qbit.framework.starter.service.exception.type.CustomerException;
+import com.qbit.framework.common.toolkits.exception.code.BusinessCodeDTO;
+import com.qbit.framework.common.toolkits.exception.code.BusinessCodeService;
+import com.qbit.framework.common.toolkits.exception.code.DefaultExceptionCode;
+import com.qbit.framework.common.toolkits.exception.type.CustomerException;
+import com.qbit.framework.common.toolkits.message.MessageFormatter;
 import com.qbit.framework.starter.service.i18n.I18nMessageUtils;
-import com.qbit.framework.starter.service.message.MessageFormatter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -123,7 +123,7 @@ public class CustomerExceptionFactory {
 
         ExceptionInfo info = new ExceptionInfo();
         info.setCode(businessCode.getCode());
-        info.setMessage(MessageFormatter.java().format(businessCode.getMessage(), args));
+        info.setMessage(MessageFormatter.java().format(businessCode.getMessageTemplate(), args));
         return info;
     }
 

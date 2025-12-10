@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.exception.code;
+package com.qbit.framework.common.toolkits.exception.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

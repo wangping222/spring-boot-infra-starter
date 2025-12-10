@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.exception.type;
+package com.qbit.framework.common.toolkits.exception.type;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,7 +1,7 @@
 package com.qbit.framework.starter.service;
 
 import com.mybatisflex.annotation.EnumValue;
-import com.qbit.framework.starter.service.enums.DescriptiveEnum;
+import com.qbit.framework.common.toolkits.enums.DescriptiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

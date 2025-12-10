@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.exception.code;
+package com.qbit.framework.common.toolkits.exception.code;
 
 public interface ExceptionCodeService {
     String getMessage(String code, Object... args);

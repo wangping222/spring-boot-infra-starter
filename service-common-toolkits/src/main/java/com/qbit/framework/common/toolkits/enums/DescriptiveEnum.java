@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.enums;
+package com.qbit.framework.common.toolkits.enums;
 
 
 /**

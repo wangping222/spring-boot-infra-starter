@@ -16,7 +16,10 @@
         <dependency>
             <groupId>com.qbit.framework</groupId>
             <artifactId>service-common</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qbit.framework</groupId>
+            <artifactId>service-common-toolkits</artifactId>
         </dependency>
 
         <dependency>

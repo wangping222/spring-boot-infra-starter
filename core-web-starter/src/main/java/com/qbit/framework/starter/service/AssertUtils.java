@@ -1,7 +1,7 @@
 package com.qbit.framework.starter.service;
 
-import com.qbit.framework.starter.service.exception.type.CustomerException;
-import com.qbit.framework.starter.service.message.MessagePlaceholder;
+import com.qbit.framework.common.toolkits.exception.type.CustomerException;
+import com.qbit.framework.common.toolkits.message.MessagePlaceholder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -14,39 +14,6 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
- * 断言工具类，用于参数校验和前置条件检查
- * <p>
- * 该类提供了一系列静态方法，用于在代码中进行各种断言检查，当断言条件不满足时，
- * 会抛出统一的{@link CustomerException}异常，便于上层统一处理。
- *
- * <p>主要特性：
- * <ul>
- *   <li>支持多种数据类型的校验：布尔值、对象、字符串、集合、数组、Map等</li>
- *   <li>支持国际化消息：通过{@link MessagePlaceholder}支持消息模板和参数</li>
- *   <li>支持Lambda表达式：提供基于{@link Supplier}的延迟消息构造，提高性能</li>
- *   <li>提供丰富的断言方法：类型检查、范围检查、正则表达式匹配等</li>
- * </ul>
- *
- * <p>使用示例：
- * <pre>
- * // 检查参数非空
- * AssertUtils.notNull(userId, "用户ID不能为空");
- *
- * // 使用占位符
- * AssertUtils.isTrue(age >= 18, "用户[{0}]年龄必须大于等于18岁", username);
- *
- * // 检查集合非空
- * AssertUtils.notEmpty(userList, "用户列表不能为空");
- *
- * // 检查字符串格式
- * AssertUtils.matchesPattern(email, EMAIL_PATTERN, "邮箱格式不正确");
- *
- * // 检查数值范围
- * AssertUtils.isInRange(score, 0, 100, "分数必须在0-100之间");
- * </pre>
- *
- * @see CustomerException 统一的异常类型
- * @see MessagePlaceholder 消息占位符支持
  */
 public final class AssertUtils {
     private AssertUtils() {

@@ -1,7 +1,7 @@
-package com.qbit.framework.starter.service.exception.type;
+package com.qbit.framework.common.toolkits.exception.type;
 
-import com.qbit.framework.starter.service.message.MessageFormatter;
-import com.qbit.framework.starter.service.message.MessagePlaceholder;
+import com.qbit.framework.common.toolkits.message.MessageFormatter;
+import com.qbit.framework.common.toolkits.message.MessagePlaceholder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,7 @@
-package com.qbit.framework.starter.service.exception.code;
+package com.qbit.framework.common.toolkits.exception.code;
 
-import com.qbit.framework.starter.service.enums.DescriptiveEnum;
+
+import com.qbit.framework.common.toolkits.enums.DescriptiveEnum;
 
 import java.io.Serial;
 import java.io.Serializable;

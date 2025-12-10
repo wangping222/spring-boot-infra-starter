@@ -1,10 +1,9 @@
 package com.qbit.framework.starter.service.initializer;
 
-import com.qbit.framework.starter.service.exception.code.BusinessCodeService;
-import com.qbit.framework.starter.service.exception.factory.CustomerExceptionFactory;
+import com.qbit.framework.common.toolkits.exception.code.BusinessCodeService;
+import com.qbit.framework.common.toolkits.exception.factory.CustomerExceptionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 public class ExceptionCodeInitializer implements SystemInitializer {
