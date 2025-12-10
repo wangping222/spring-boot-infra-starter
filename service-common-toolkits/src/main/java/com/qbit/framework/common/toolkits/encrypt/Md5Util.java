@@ -1,4 +1,4 @@
-package com.qbit.framework.common.encrypt;
+package com.qbit.framework.common.toolkits.encrypt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,6 +79,7 @@ public class Md5Util {
             public int read() throws IOException {
                 return input.read();
             }
+
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 return input.read(b, off, len);

@@ -1,4 +1,4 @@
-package com.qbit.framework.common.encrypt;
+package com.qbit.framework.common.toolkits.encrypt;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,6 +9,7 @@ import java.util.Formatter;
 public class HexUtil {
 
     public static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     /**
      * 字节码转16进制
      *

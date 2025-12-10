@@ -1,4 +1,4 @@
-package com.qbit.framework.common.encrypt;
+package com.qbit.framework.common.toolkits.encrypt;
 
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +68,7 @@ public class ValidatorUtil {
             return false;
         }
 
-        return email.toLowerCase().endsWith("@qbitnetwork.com") ||  email.toLowerCase().endsWith("@interlace.money");
+        return email.toLowerCase().endsWith("@qbitnetwork.com") || email.toLowerCase().endsWith("@interlace.money");
     }
 
     /**

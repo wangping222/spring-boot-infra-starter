@@ -1,4 +1,4 @@
-package com.qbit.framework.common.encrypt;
+package com.qbit.framework.common.toolkits.encrypt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

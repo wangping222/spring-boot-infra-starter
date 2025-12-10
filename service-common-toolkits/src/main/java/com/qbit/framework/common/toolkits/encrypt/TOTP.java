@@ -1,4 +1,4 @@
-package com.qbit.framework.common.encrypt;
+package com.qbit.framework.common.toolkits.encrypt;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
