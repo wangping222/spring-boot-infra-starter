@@ -50,11 +50,7 @@
                 <artifactId>service-common-toolkits</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.qbit.framework</groupId>
-                <artifactId>trace-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.qbit.framework</groupId>
                 <artifactId>xxljob-starter</artifactId>
@@ -68,16 +64,6 @@
             <dependency>
                 <groupId>com.qbit.framework</groupId>
                 <artifactId>openapi-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.qbit.framework</groupId>
-                <artifactId>excel-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.qbit.framework</groupId>
-                <artifactId>pdf-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
