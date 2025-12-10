@@ -1,11 +1,9 @@
 package com.qbit.framework.starter.merchant.interceptor;
 
-import com.qbit.framework.starter.trace.TraceUtils;
+import com.qbit.framework.common.toolkits.tracing.TraceUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Feign 链路追踪拦截器

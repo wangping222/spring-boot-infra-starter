@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.trace;
+package com.qbit.framework.common.toolkits.tracing;
 
 import org.slf4j.MDC;
 

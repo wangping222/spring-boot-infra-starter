@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.trace.properties;
+package com.qbit.framework.starter.service.filter;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

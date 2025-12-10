@@ -25,8 +25,6 @@
         <!--        <module>openapi-starter</module>-->
         <module>oss-starter</module>
         <module>xxljob-starter</module>
-        <module>trace-starter</module>
-        <module>excel-starter</module>
         <module>core-web-starter</module>
         <module>service-common</module>
         <module>service-common-toolkits</module>

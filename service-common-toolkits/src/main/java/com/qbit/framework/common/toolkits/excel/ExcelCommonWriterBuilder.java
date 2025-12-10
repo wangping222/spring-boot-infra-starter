@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.excel;
+package com.qbit.framework.common.toolkits.excel;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;

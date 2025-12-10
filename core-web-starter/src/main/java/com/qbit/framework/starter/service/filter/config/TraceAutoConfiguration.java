@@ -1,7 +1,7 @@
-package com.qbit.framework.starter.trace.config;
+package com.qbit.framework.starter.service.filter.config;
 
-import com.qbit.framework.starter.trace.properties.TraceProperties;
-import com.qbit.framework.starter.trace.web.TraceInterceptor;
+import com.qbit.framework.starter.service.filter.TraceInterceptor;
+import com.qbit.framework.starter.service.filter.TraceProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

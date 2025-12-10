@@ -1,9 +1,8 @@
-package com.qbit.framework.starter.excel;
+package com.qbit.framework.common.toolkits.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
-import com.qbit.framework.starter.excel.properties.ExcelProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class ExcelClient {
 
-    private final ExcelProperties properties;
 
     /**
      * Start a fluent export task
@@ -62,7 +60,7 @@ public class ExcelClient {
         public ExcelExportBuilder(ExcelClient client, List<T> data) {
             this.client = client;
             this.data = data;
-            this.sheetName = client.properties.getDefaultSheetName();
+            this.sheetName = "sheet1";
         }
 
         public ExcelExportBuilder<T> fileName(String fileName) {

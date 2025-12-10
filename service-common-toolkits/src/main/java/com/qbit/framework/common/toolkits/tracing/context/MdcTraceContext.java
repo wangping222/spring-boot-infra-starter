@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.trace.context;
+package com.qbit.framework.common.toolkits.tracing.context;
 
 /**
  * 基于 MDC 的作用域化 Trace 上下文工具

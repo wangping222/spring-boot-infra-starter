@@ -1,1 +1,1 @@
-com.qbit.framework.starter.trace.config.TraceAutoConfiguration
+com.qbit.framework.starter.service.filter.config.TraceAutoConfiguration

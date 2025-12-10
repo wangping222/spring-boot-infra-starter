@@ -1,6 +1,6 @@
-package com.qbit.framework.starter.trace.web;
+package com.qbit.framework.starter.service.filter;
 
-import com.qbit.framework.starter.trace.TraceUtils;
+import com.qbit.framework.common.toolkits.tracing.TraceUtils;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 

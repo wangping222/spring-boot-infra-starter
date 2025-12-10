@@ -1,6 +1,6 @@
-package com.qbit.framework.starter.trace.web;
+package com.qbit.framework.starter.service.filter;
 
-import com.qbit.framework.starter.trace.context.MdcTraceContext;
+import com.qbit.framework.common.toolkits.tracing.context.MdcTraceContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

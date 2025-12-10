@@ -68,6 +68,12 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itext-asian</artifactId>
         </dependency>
+
+        <!-- excel 相关依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -24,7 +24,7 @@ trace:
 
 ```java
 import core.com.qbit.framework.starter.trace.MdcScope;
-import com.qbit.framework.starter.trace.TraceUtils;
+import com.qbit.framework.common.toolkits.tracing.TraceUtils;
 
 try(var scope = MdcScope.with("traceId", TraceUtils.newId())){
         // 业务逻辑，日志自动带上 traceId
