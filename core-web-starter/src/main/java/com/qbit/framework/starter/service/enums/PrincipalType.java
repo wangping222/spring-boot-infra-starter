@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service;
+package com.qbit.framework.starter.service.enums;
 
 import com.mybatisflex.annotation.EnumValue;
 import com.qbit.framework.common.toolkits.enums.DescriptiveEnum;

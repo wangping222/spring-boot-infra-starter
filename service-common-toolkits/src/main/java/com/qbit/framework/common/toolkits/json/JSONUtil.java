@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.json;
+package com.qbit.framework.common.toolkits.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

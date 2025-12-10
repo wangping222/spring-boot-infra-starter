@@ -1,6 +1,6 @@
 package com.qbit.framework.starter.service.context;
 
-import com.qbit.framework.starter.service.AppType;
+import com.qbit.framework.starter.service.enums.AppType;
 import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.atomic.AtomicReference;
