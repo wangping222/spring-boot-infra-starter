@@ -21,7 +21,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/${applicationName}.log</file>
+        <file>~/logs/${applicationName}.log</file>
         <encoder>
             <pattern>${LOG_FILE_PATTERN}</pattern>
             <charset>UTF-8</charset>
