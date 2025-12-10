@@ -6,8 +6,8 @@ import com.qbit.framework.common.toolkits.exception.code.BusinessCodeDTO;
 import com.qbit.framework.common.toolkits.exception.code.BusinessCodeService;
 import com.qbit.framework.common.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.common.toolkits.exception.type.CustomerException;
+import com.qbit.framework.common.toolkits.i18n.I18nMessageUtils;
 import com.qbit.framework.common.toolkits.message.MessageFormatter;
-import com.qbit.framework.starter.service.i18n.I18nMessageUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,9 @@ import java.util.Locale;
 public class CustomerExceptionFactory {
 
     public static final String ERROR = "999999";
+
     private static BusinessCodeService businessCodeService;
+
     private static final Cache<String, List<BusinessCodeDTO>> BUSINESS_CODE_CACHE =
             Caffeine.newBuilder()
                     .maximumSize(2048)

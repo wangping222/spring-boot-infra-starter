@@ -1,6 +1,8 @@
 package com.qbit.framework.common.toolkits;
 
+import com.qbit.framework.common.toolkits.exception.factory.CustomerExceptionFactory;
 import com.qbit.framework.common.toolkits.exception.type.CustomerException;
+import com.qbit.framework.common.toolkits.message.MessageFormatter;
 import com.qbit.framework.common.toolkits.message.MessagePlaceholder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -31,11 +33,13 @@ public final class AssertUtils {
     }
 
     public static void isTrue(boolean expression, String message, Object... args) {
-        state(expression, () -> CustomerException.common(MessagePlaceholder.of(message, args)));
+        if (!expression) {
+            throw CustomerExceptionFactory.businessMessage(MessageFormatter.java().format(message, args));
+        }
     }
 
     public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
-        state(expression, () -> CustomerException.common(nullSafeGet(messageSupplier)));
+        state(expression, () -> CustomerExceptionFactory.businessMessage(nullSafeGet(messageSupplier)));
     }
 
     public static void isFalse(boolean expression, MessagePlaceholder placeholder) {
@@ -126,7 +130,7 @@ public final class AssertUtils {
         if (collection != null) {
             for (Object element : collection) {
                 if (element == null) {
-                    throw CustomerException.common(MessagePlaceholder.of(message, args));
+                    throw CustomerExceptionFactory.businessMessage(MessageFormatter.java().format(message, args));
                 }
             }
         }

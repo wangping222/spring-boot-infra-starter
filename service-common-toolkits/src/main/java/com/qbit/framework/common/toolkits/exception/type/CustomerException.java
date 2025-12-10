@@ -1,7 +1,5 @@
 package com.qbit.framework.common.toolkits.exception.type;
 
-import com.qbit.framework.common.toolkits.message.MessageFormatter;
-import com.qbit.framework.common.toolkits.message.MessagePlaceholder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -11,13 +9,12 @@ import org.springframework.http.HttpStatus;
 public class CustomerException extends RuntimeException {
 
     public static final String DEFAULT_ERROR_CODE = "99999";
+
     private HttpStatus httpStatus;
 
     private String message;
 
     private String code;
-
-    private Object[] pvParams;
 
     public CustomerException(String code, String message, HttpStatus httpStatus) {
         this.httpStatus = httpStatus;
@@ -30,17 +27,4 @@ public class CustomerException extends RuntimeException {
         this.code = DEFAULT_ERROR_CODE;
         this.message = message;
     }
-
-    public static CustomerException common(MessagePlaceholder of) {
-        String formatted = of == null
-                ? "请求不合法"
-                : MessageFormatter.java().format(of.getPattern(), of.getArgs());
-        return new CustomerException("400", formatted, HttpStatus.BAD_REQUEST);
-    }
-
-    public static CustomerException common(String message) {
-        String formatted = message == null ? "请求不合法" : message;
-        return new CustomerException("400", formatted, HttpStatus.BAD_REQUEST);
-    }
-
 }
