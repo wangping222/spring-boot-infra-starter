@@ -1,7 +1,7 @@
-package com.qbit.framework.starter.service.request;
+package com.qbit.framework.common.toolkits.request;
 
 
-import com.qbit.framework.starter.service.AssertUtils;
+import com.qbit.framework.common.toolkits.AssertUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
@@ -23,7 +23,6 @@ import java.util.Map;
 /**
  * 从上下文中获取 http servlet request
  *
- * @see org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
  **/
 @Slf4j
 public final class HttpServletRequestUtils {

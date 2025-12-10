@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public class CoreWebContextAutoConfiguration {
 
-    @Bean(name = "springApplicationContextUtils")
-    @ConditionalOnMissingBean(name = "springApplicationContextUtils")
-    public SpringApplicationContextUtils springApplicationContextUtils() {
-        return new SpringApplicationContextUtils();
+    @Bean(name = "applicationContextUtils")
+    @ConditionalOnMissingBean(name = "applicationContextUtils")
+    public ApplicationContextUtils springApplicationContextUtils() {
+        return new ApplicationContextUtils();
     }
 }
 

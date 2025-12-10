@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.logging;
+package com.qbit.framework.common.toolkits.logging;
 
 import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;

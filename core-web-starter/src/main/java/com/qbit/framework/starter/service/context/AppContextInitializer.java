@@ -24,7 +24,7 @@ public class AppContextInitializer implements ApplicationContextInitializer<Conf
     private static final Map<String, Supplier<BeanDefinition>> BEAN_DEFINITIONS = new ConcurrentHashMap<>();
 
     static {
-        BEAN_DEFINITIONS.put(SpringApplicationContextUtils.class.getName(), () -> new RootBeanDefinition(SpringApplicationContextUtils.class));
+        BEAN_DEFINITIONS.put(ApplicationContextUtils.class.getName(), () -> new RootBeanDefinition(ApplicationContextUtils.class));
     }
 
     static void registerBean(String bean, Supplier<BeanDefinition> supplier) {

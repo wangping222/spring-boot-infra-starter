@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <conversionRule conversionWord="msg"
-                    converterClass="com.qbit.framework.starter.service.logging.SensitiveDataConverter"/>
+                    converterClass="com.qbit.framework.common.toolkits.logging.SensitiveDataConverter"/>
 
     <springProperty scope="context" name="applicationName" source="spring.application.name" defaultValue="app"/>
 

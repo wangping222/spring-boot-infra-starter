@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.constants;
+package com.qbit.framework.common.toolkits.constants;
 
 import java.time.format.DateTimeFormatter;
 

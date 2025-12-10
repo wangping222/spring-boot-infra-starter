@@ -1,6 +1,6 @@
-package com.qbit.framework.starter.service.i18n;
+package com.qbit.framework.common.toolkits.i18n;
 
-import com.qbit.framework.starter.service.constants.WebConstants;
+import com.qbit.framework.common.toolkits.constants.WebConstants;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;

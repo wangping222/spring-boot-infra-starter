@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service.money;
+package com.qbit.framework.common.toolkits.money;
 
 
 import lombok.AllArgsConstructor;

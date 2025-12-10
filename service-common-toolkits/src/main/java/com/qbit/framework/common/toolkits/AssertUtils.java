@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.service;
+package com.qbit.framework.common.toolkits;
 
 import com.qbit.framework.common.toolkits.exception.type.CustomerException;
 import com.qbit.framework.common.toolkits.message.MessagePlaceholder;

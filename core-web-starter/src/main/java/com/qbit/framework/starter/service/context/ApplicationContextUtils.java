@@ -1,6 +1,6 @@
 package com.qbit.framework.starter.service.context;
 
-import com.qbit.framework.starter.service.AssertUtils;
+import com.qbit.framework.common.toolkits.AssertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -11,7 +11,7 @@ import org.springframework.lang.NonNull;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-public class SpringApplicationContextUtils implements ApplicationContextAware {
+public class ApplicationContextUtils implements ApplicationContextAware {
 
     private static final AtomicReference<ApplicationContext> CONTEXT_HOLDER = new AtomicReference<>();
 

@@ -1,6 +1,5 @@
 package com.qbit.framework.starter.service.initializer;
 
-import com.qbit.framework.starter.service.i18n.SpringI18nMessageSourceInitializer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
