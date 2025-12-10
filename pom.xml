@@ -26,7 +26,7 @@
         <module>oss-starter</module>
         <module>xxljob-starter</module>
         <module>core-web-starter</module>
-        <module>service-common</module>
+        <module>core-api-model</module>
         <module>service-common-toolkits</module>
         <module>tests</module>
     </modules>
@@ -42,7 +42,8 @@
             </dependency>
             <dependency>
                 <groupId>com.qbit.framework</groupId>
-                <artifactId>service-common</artifactId>
+                <artifactId>core-api-model</artifactId>
+
                 <version>${project.version}</version>
             </dependency>
             <dependency>

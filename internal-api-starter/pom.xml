@@ -25,7 +25,8 @@
         </dependency>
         <dependency>
             <groupId>com.qbit.framework</groupId>
-            <artifactId>service-common</artifactId>
+            <artifactId>core-api-model</artifactId>
+
         </dependency>
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
