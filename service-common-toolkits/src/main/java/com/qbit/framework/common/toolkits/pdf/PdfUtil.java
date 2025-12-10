@@ -1,4 +1,4 @@
-package com.qbit.framework.starter.pdf;
+package com.qbit.framework.common.toolkits.pdf;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;

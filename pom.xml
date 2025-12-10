@@ -30,7 +30,6 @@
         <module>core-web-starter</module>
         <module>service-common</module>
         <module>service-common-toolkits</module>
-        <module>pdf-starter</module>
         <module>tests</module>
     </modules>
 
