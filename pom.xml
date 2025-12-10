@@ -21,14 +21,16 @@
     </properties>
 
     <modules>
-        <module>internal-api-starter</module>
-        <!--        <module>openapi-starter</module>-->
-        <module>oss-starter</module>
-        <module>xxljob-starter</module>
         <module>core-web-starter</module>
         <module>core-api-model</module>
         <module>service-common-toolkits</module>
         <module>tests</module>
+
+        <module>starters/internal-api-starter</module>
+        <module>starters/oss-starter</module>
+        <module>starters/xxljob-starter</module>
+        <!--        <module>starters/openapi-starter</module>-->
+
     </modules>
 
     <dependencyManagement>
