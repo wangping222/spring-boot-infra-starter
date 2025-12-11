@@ -12,7 +12,34 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * @author qbit
+ * 国际化消息工具类
+ * <p>
+ * 提供国际化消息的获取和配置功能，支持：
+ * <ul>
+ *   <li>根据消息键获取国际化消息</li>
+ *   <li>支持消息参数替换</li>
+ *   <li>支持默认消息设置</li>
+ *   <li>支持自定义 Locale 提供器</li>
+ *   <li>支持自定义消息键匹配器</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>使用示例：</p>
+ * <pre>{@code
+ * // 设置消息源
+ * I18nMessageUtils.setMessageSource(messageSource);
+ * 
+ * // 设置 Locale 提供器
+ * I18nMessageUtils.setLocaleSupplier(() -> LocaleContextHolder.getLocale());
+ * 
+ * // 获取国际化消息
+ * String message = I18nMessageUtils.getMessage("$.user.login.success");
+ * 
+ * // 获取带参数的国际化消息
+ * String message = I18nMessageUtils.getMessage("$.user.welcome", new Object[]{"张三"});
+ * }</pre>
+ *
+ * @author Qbit Framework
  */
 public class I18nMessageUtils {
 

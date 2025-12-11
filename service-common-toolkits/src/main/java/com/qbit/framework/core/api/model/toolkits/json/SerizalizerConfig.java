@@ -20,6 +20,31 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+
+/**
+ * JSON序列化配置类
+ * <p>
+ * 该类用于自定义 Jackson 的序列化和反序列化行为，主要包括：
+ * <ul>
+ *   <li>LocalDateTime: 序列化为UTC时间戳(long)，反序列化支持时间戳转LocalDateTime</li>
+ *   <li>LocalDate: 序列化为yyyy-MM-dd格式字符串，反序列化支持字符串和时间戳</li>
+ *   <li>Long/long: 序列化为字符串，避免前端精度丢失</li>
+ *   <li>BigDecimal: 序列化为字符串，使用toPlainString避免科学计数法</li>
+ *   <li>Double/double: 序列化为字符串，通过BigDecimal保证精度</li>
+ *   <li>BigInteger: 序列化为字符串</li>
+ * </ul>
+ * <p>
+ * 全局配置：
+ * <ul>
+ *   <li>空字符串自动转换为null对象</li>
+ *   <li>忽略未知属性，避免反序列化失败</li>
+ *   <li>日期类型使用时间戳格式</li>
+ *   <li>null值字段不参与序列化</li>
+ * </ul>
+ *
+ * @author Qbit Framework
+ * @see Jackson2ObjectMapperBuilder
+ */
 public final class SerizalizerConfig {
 
     public static void customizeBuilder(Jackson2ObjectMapperBuilder builder) {
