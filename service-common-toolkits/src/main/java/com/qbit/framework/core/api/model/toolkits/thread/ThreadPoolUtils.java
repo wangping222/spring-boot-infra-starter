@@ -1,7 +1,6 @@
 package com.qbit.framework.core.api.model.toolkits.thread;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,14 +9,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 线程池工具类
  * 提供常用的线程池创建和管理功能
  */
+@Slf4j
 public final class ThreadPoolUtils {
-    
-    private static final Logger log = LoggerFactory.getLogger(ThreadPoolUtils.class);
-    
+
     private ThreadPoolUtils() {
         throw new AssertionError();
     }
-    
+
     /**
      * 创建固定大小的线程池
      *
@@ -35,7 +33,7 @@ public final class ThreadPoolUtils {
                 new NamedThreadFactory(threadName)
         );
     }
-    
+
     /**
      * 创建固定大小的线程池（带队列容量限制）
      *
@@ -55,7 +53,7 @@ public final class ThreadPoolUtils {
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
-    
+
     /**
      * 创建缓存线程池
      *
@@ -72,7 +70,7 @@ public final class ThreadPoolUtils {
                 new NamedThreadFactory(threadName)
         );
     }
-    
+
     /**
      * 创建单线程池
      *
@@ -89,7 +87,7 @@ public final class ThreadPoolUtils {
                 new NamedThreadFactory(threadName)
         );
     }
-    
+
     /**
      * 创建可调度的线程池
      *
@@ -100,7 +98,7 @@ public final class ThreadPoolUtils {
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize, String threadName) {
         return new ScheduledThreadPoolExecutor(corePoolSize, new NamedThreadFactory(threadName));
     }
-    
+
     /**
      * 创建自定义线程池
      *
@@ -129,7 +127,7 @@ public final class ThreadPoolUtils {
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
-    
+
     /**
      * 优雅关闭线程池
      *
@@ -138,7 +136,7 @@ public final class ThreadPoolUtils {
     public static void shutdownGracefully(ExecutorService executor) {
         shutdownGracefully(executor, 60, TimeUnit.SECONDS);
     }
-    
+
     /**
      * 优雅关闭线程池
      *
@@ -150,7 +148,7 @@ public final class ThreadPoolUtils {
         if (executor == null || executor.isShutdown()) {
             return;
         }
-        
+
         try {
             executor.shutdown();
             if (!executor.awaitTermination(timeout, timeUnit)) {
@@ -164,7 +162,7 @@ public final class ThreadPoolUtils {
             Thread.currentThread().interrupt();
         }
     }
-    
+
     /**
      * 自定义线程工厂，支持线程命名
      */
@@ -172,16 +170,16 @@ public final class ThreadPoolUtils {
         private final AtomicInteger threadNumber = new AtomicInteger(1);
         private final String namePrefix;
         private final boolean daemon;
-        
+
         public NamedThreadFactory(String namePrefix) {
             this(namePrefix, false);
         }
-        
+
         public NamedThreadFactory(String namePrefix, boolean daemon) {
             this.namePrefix = namePrefix + "-";
             this.daemon = daemon;
         }
-        
+
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r, namePrefix + threadNumber.getAndIncrement());
