@@ -1,6 +1,6 @@
 package com.qbit.framework.starter.merchant.interceptor;
 
-import com.qbit.framework.common.toolkits.encrypt.ShaUtil;
+import com.qbit.framework.core.api.model.toolkits.encrypt.ShaUtil;
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

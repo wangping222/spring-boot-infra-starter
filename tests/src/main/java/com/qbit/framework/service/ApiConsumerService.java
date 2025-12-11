@@ -3,7 +3,7 @@ package com.qbit.framework.service;
 import com.qbit.admin.account.model.PayOrderVO;
 import com.qbit.admin.account.service.AdminDwdAccountApi;
 import com.qbit.framework.api.InternalApi;
-import com.qbit.framework.common.web.Result;
+import com.qbit.framework.core.api.model.web.Result;
 import com.qbit.framework.starter.merchant.properties.FeignApiProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

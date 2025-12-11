@@ -1,7 +1,7 @@
 package com.qbit.framework.api;
 
 
-import com.qbit.framework.common.web.Result;
+import com.qbit.framework.core.api.model.web.Result;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

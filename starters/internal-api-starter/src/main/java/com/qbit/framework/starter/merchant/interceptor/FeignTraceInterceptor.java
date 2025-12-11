@@ -1,6 +1,6 @@
 package com.qbit.framework.starter.merchant.interceptor;
 
-import com.qbit.framework.common.toolkits.tracing.TraceUtils;
+import com.qbit.framework.core.api.model.toolkits.tracing.TraceUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;

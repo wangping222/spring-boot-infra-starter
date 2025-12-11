@@ -1,4 +1,4 @@
-com.qbit.framework.starter.service.filter.config.ServiceFiltersConfiguration
-com.qbit.framework.starter.service.initializer.CoreWebInitializerAutoConfiguration
-com.qbit.framework.starter.service.context.CoreWebContextAutoConfiguration
-com.qbit.framework.starter.service.filter.config.TraceAutoConfiguration
+com.qbit.framework.core.web.filter.config.ServiceFiltersConfiguration
+com.qbit.framework.core.web.initializer.CoreWebInitializerAutoConfiguration
+com.qbit.framework.core.web.context.CoreWebContextAutoConfiguration
+com.qbit.framework.core.web.filter.config.TraceAutoConfiguration
