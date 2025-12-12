@@ -5,6 +5,9 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.SPAN_ID;
+import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+
 /**
  * Feign 链路追踪拦截器
  * 自动将当前线程的 traceId 和 spanId 传递到下游服务
@@ -14,8 +17,8 @@ public class FeignTraceInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        String traceId = TraceUtils.get(TraceUtils.TRACE_ID);
-        String spanId = TraceUtils.get(TraceUtils.SPAN_ID);
+        String traceId = TraceUtils.get(TRACE_ID);
+        String spanId = TraceUtils.get(SPAN_ID);
 
         if (traceId != null && !traceId.isBlank()) {
             template.header(TraceUtils.TRACE_ID_HEADER, traceId);
