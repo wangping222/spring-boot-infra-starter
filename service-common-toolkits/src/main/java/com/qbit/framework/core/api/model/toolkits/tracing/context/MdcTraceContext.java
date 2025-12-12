@@ -9,6 +9,8 @@ package com.qbit.framework.core.api.model.toolkits.tracing.context;
  * 注意：
  * - put 与 close 必须在同一线程调用
  * - 异步任务需自行传播 MDC（例如使用 TaskDecorator）
+ *
+ * @author Qbit Framework
  */
 
 import org.slf4j.MDC;
@@ -43,15 +45,6 @@ public final class MdcTraceContext implements AutoCloseable {
             MDC.setContextMap(values);
         }
         return new MdcTraceContext(prev);
-    }
-
-    @Override
-    public void close() {
-        if (previous == null || previous.isEmpty()) {
-            MDC.clear();
-        } else {
-            MDC.setContextMap(previous);
-        }
     }
 
     public static Runnable wrap(Runnable task) {
@@ -98,5 +91,14 @@ public final class MdcTraceContext implements AutoCloseable {
 
     public static TaskDecorator decorator() {
         return MdcTraceContext::wrap;
+    }
+
+    @Override
+    public void close() {
+        if (previous == null || previous.isEmpty()) {
+            MDC.clear();
+        } else {
+            MDC.setContextMap(previous);
+        }
     }
 }

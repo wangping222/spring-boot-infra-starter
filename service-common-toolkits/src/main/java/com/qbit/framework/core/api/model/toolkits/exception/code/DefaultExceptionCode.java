@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.toolkits.exception.code;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * @author Qbit Framework
+ */
 @Getter
 @AllArgsConstructor
 public enum DefaultExceptionCode implements ExceptionCode {

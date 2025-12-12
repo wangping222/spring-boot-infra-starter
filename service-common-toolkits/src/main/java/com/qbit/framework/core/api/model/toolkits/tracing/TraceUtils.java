@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Qbit Framework
+ */
 public final class TraceUtils {
     // MDC 中的 key
     public static final String TRACE_ID = "traceId";

@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 线程池工具类
  * 提供常用的线程池创建和管理功能
+ * @author Qbit Framework
  */
 @Slf4j
 public final class ThreadPoolUtils {

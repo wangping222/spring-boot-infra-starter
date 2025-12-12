@@ -38,7 +38,7 @@ public class ExcelCommonWriter {
      * @return this
      */
     public <T> ExcelCommonWriter write(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable,
-            ExcelRowHandleFunction<T> function) {
+                                       ExcelRowHandleFunction<T> function) {
         excelBuilder.addContent(data, writeSheet, writeTable, function);
         return this;
     }

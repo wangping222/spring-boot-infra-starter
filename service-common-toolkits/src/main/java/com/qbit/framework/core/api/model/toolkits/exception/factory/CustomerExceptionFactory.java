@@ -18,29 +18,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * @author Qbit Framework
+ */
 @Slf4j
 public class CustomerExceptionFactory {
 
     public static final String ERROR = "999999";
-
-    private static BusinessCodeService businessCodeService;
-
     private static final Cache<String, List<BusinessCodeDTO>> BUSINESS_CODE_CACHE =
             Caffeine.newBuilder()
                     .maximumSize(2048)
                     .expireAfterWrite(Duration.ofMinutes(10))
                     .build();
-
-    public static void setBusinessCodeService(BusinessCodeService businessCodeService) {
-        CustomerExceptionFactory.businessCodeService = businessCodeService;
-    }
+    private static BusinessCodeService businessCodeService;
 
     private CustomerExceptionFactory() {
     }
 
-    public CustomerException createException(String code, Object... args) {
-        ExceptionInfo info = getMessage(code, args);
-        return new CustomerException(info.getCode(), info.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public static void setBusinessCodeService(BusinessCodeService businessCodeService) {
+        CustomerExceptionFactory.businessCodeService = businessCodeService;
     }
 
     public static CustomerException business(String code, Object... args) {
@@ -127,6 +123,11 @@ public class CustomerExceptionFactory {
         info.setCode(businessCode.getCode());
         info.setMessage(MessageFormatter.java().format(businessCode.getMessageTemplate(), args));
         return info;
+    }
+
+    public CustomerException createException(String code, Object... args) {
+        ExceptionInfo info = getMessage(code, args);
+        return new CustomerException(info.getCode(), info.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Data

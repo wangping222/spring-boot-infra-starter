@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.toolkits.message;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+/**
+ * @author Qbit Framework
+ */
 public class SimpleMessageFormatter implements MessageFormatter {
     static final String DELIM_STR = "{}";
 

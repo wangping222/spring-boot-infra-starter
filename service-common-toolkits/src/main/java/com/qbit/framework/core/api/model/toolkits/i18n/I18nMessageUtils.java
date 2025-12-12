@@ -23,18 +23,18 @@ import java.util.function.Supplier;
  *   <li>支持自定义消息键匹配器</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>使用示例：</p>
  * <pre>{@code
  * // 设置消息源
  * I18nMessageUtils.setMessageSource(messageSource);
- * 
+ *
  * // 设置 Locale 提供器
  * I18nMessageUtils.setLocaleSupplier(() -> LocaleContextHolder.getLocale());
- * 
+ *
  * // 获取国际化消息
  * String message = I18nMessageUtils.getMessage("$.user.login.success");
- * 
+ *
  * // 获取带参数的国际化消息
  * String message = I18nMessageUtils.getMessage("$.user.welcome", new Object[]{"张三"});
  * }</pre>
@@ -43,24 +43,22 @@ import java.util.function.Supplier;
  */
 public class I18nMessageUtils {
 
-    private I18nMessageUtils() {
-        throw new AssertionError();
-    }
-
     /**
      * {@link Locale} Supplier
      */
     private static final AtomicReference<Supplier<Locale>> LOCALE_SUPPLIER = new AtomicReference<>();
-
     /**
      * i18n 消息源
      */
     private static final AtomicReference<MessageSource> MESSAGE_SOURCE = new AtomicReference<>();
-
     /**
      * i18n 消息 key 匹配器
      */
     private static final AtomicReference<Predicate<String>> I18N_KEY_MATCHER = new AtomicReference<>(text -> text.startsWith("$."));
+
+    private I18nMessageUtils() {
+        throw new AssertionError();
+    }
 
     public static String getMessage(String message) {
         return getMessage(message, WebConstants.EMPTY);

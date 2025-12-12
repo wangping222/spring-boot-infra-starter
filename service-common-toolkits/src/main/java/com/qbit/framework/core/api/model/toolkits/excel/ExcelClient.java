@@ -16,6 +16,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * @author Qbit Framework
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class ExcelClient {
@@ -49,13 +52,25 @@ public class ExcelClient {
                 .writeTo(response);
     }
 
+    /**
+     * Read data from Excel file
+     *
+     * @param inputStream  Input stream of the Excel file
+     * @param head         Class of the data model
+     * @param readListener Listener for reading data
+     * @param <T>          Type of data
+     */
+    public <T> void read(InputStream inputStream, Class<T> head, ReadListener<T> readListener) {
+        EasyExcel.read(inputStream, head, readListener).sheet().doRead();
+    }
+
     public static class ExcelExportBuilder<T> {
         private final ExcelClient client;
         private final List<T> data;
+        private final List<ExcelCellDescriptor<T>> descriptors = new ArrayList<>();
         private String fileName;
         private String sheetName;
         private Class<T> head;
-        private final List<ExcelCellDescriptor<T>> descriptors = new ArrayList<>();
 
         public ExcelExportBuilder(ExcelClient client, List<T> data) {
             this.client = client;
@@ -136,17 +151,5 @@ public class ExcelClient {
                 }
             }
         }
-    }
-
-    /**
-     * Read data from Excel file
-     *
-     * @param inputStream  Input stream of the Excel file
-     * @param head         Class of the data model
-     * @param readListener Listener for reading data
-     * @param <T>          Type of data
-     */
-    public <T> void read(InputStream inputStream, Class<T> head, ReadListener<T> readListener) {
-        EasyExcel.read(inputStream, head, readListener).sheet().doRead();
     }
 }

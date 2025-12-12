@@ -44,7 +44,7 @@ public class ExcelCommonBuilderImpl implements ExcelBuilder {
     }
 
     public <T> void addContent(Collection<T> data, WriteSheet writeSheet, WriteTable writeTable,
-            ExcelRowHandleFunction<T> function) {
+                               ExcelRowHandleFunction<T> function) {
         try {
             context.currentSheet(writeSheet, WriteTypeEnum.ADD);
             context.currentTable(writeTable);

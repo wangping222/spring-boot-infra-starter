@@ -6,6 +6,9 @@ import com.qbit.framework.core.api.model.toolkits.enums.DescriptiveEnum;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * @author Qbit Framework
+ */
 public interface ExceptionCode extends DescriptiveEnum, Serializable {
 
     String SUCCESSFUL_CODE = "0";

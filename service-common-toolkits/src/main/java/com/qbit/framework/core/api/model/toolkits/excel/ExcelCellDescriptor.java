@@ -5,6 +5,9 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
+/**
+ * @author Qbit Framework
+ */
 @AllArgsConstructor
 @Getter
 public class ExcelCellDescriptor<T> {

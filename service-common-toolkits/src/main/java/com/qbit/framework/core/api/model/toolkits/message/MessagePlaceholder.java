@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.toolkits.message;
 
 import lombok.Getter;
 
+/**
+ * @author Qbit Framework
+ */
 @Getter
 public final class MessagePlaceholder {
 

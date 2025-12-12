@@ -8,6 +8,8 @@ import lombok.Getter;
  * ISO 3166-1 国家码枚举（常用子集）。
  * 包含 Alpha-2、Alpha-3、数字码以及中文名称。
  * 如需更多国家，可按相同格式扩展。
+ *
+ * @author Qbit Framework
  */
 @Getter
 @AllArgsConstructor
@@ -21,16 +23,16 @@ public enum CountryCode {
     JP("JP", "JPN", 392, "日本"),
     KR("KR", "KOR", 410, "韩国"),
     CA("CA", "CAN", 124, "加拿大"),
-    AU("AU", "AUS", 36,  "澳大利亚"),
+    AU("AU", "AUS", 36, "澳大利亚"),
     NZ("NZ", "NZL", 554, "新西兰"),
     SG("SG", "SGP", 702, "新加坡"),
     HK("HK", "HKG", 344, "中国香港"),
     TW("TW", "TWN", 158, "中国台湾"),
     IN("IN", "IND", 356, "印度"),
     RU("RU", "RUS", 643, "俄罗斯"),
-    BR("BR", "BRA", 76,  "巴西"),
+    BR("BR", "BRA", 76, "巴西"),
     MX("MX", "MEX", 484, "墨西哥"),
-    AR("AR", "ARG", 32,  "阿根廷"),
+    AR("AR", "ARG", 32, "阿根廷"),
     CL("CL", "CHL", 152, "智利"),
     CO("CO", "COL", 170, "哥伦比亚"),
     ZA("ZA", "ZAF", 710, "南非"),
@@ -51,8 +53,8 @@ public enum CountryCode {
     PT("PT", "PRT", 620, "葡萄牙"),
     GR("GR", "GRC", 300, "希腊"),
     NL("NL", "NLD", 528, "荷兰"),
-    BE("BE", "BEL", 56,  "比利时"),
-    AT("AT", "AUT", 40,  "奥地利"),
+    BE("BE", "BEL", 56, "比利时"),
+    AT("AT", "AUT", 40, "奥地利"),
     SE("SE", "SWE", 752, "瑞典"),
     NO("NO", "NOR", 578, "挪威"),
     DK("DK", "DNK", 208, "丹麦"),

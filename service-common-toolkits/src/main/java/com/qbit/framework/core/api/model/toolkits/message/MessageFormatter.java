@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.toolkits.message;
 
 import java.text.MessageFormat;
 
+/**
+ * @author Qbit Framework
+ */
 public interface MessageFormatter {
     static MessageFormatter none() {
         return (pattern, args) -> pattern;

@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Qbit Framework
+ */
 public class MdcScope implements AutoCloseable {
     private final Map<String, String> previous = new HashMap<>();
     private final Set<String> keys = new HashSet<>();

@@ -4,7 +4,8 @@ package com.qbit.framework.core.api.model.toolkits.enums;
 /**
  * 带描述的枚举，实现该接口的枚举都是可描述的
  *
- **/
+ * @author Qbit Framework
+ */
 public interface DescriptiveEnum {
 
     /**

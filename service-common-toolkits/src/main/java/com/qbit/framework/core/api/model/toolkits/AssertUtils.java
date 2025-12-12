@@ -16,6 +16,8 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
+ * @author Qbit Framework
+ *
  */
 public final class AssertUtils {
     private AssertUtils() {
