@@ -4,6 +4,11 @@ package com.qbit.framework.core.api.model.toolkits.constants;
  * @author Qbit Framework
  */
 public class WebConstants {
+    /**
+     * TRACE_ID
+     */
+    public static final String TRACE_ID = "X-TraceId";
+    public static final String SPAN_ID = "spanId";
 
     /**
      * tenantId

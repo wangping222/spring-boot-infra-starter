@@ -6,6 +6,17 @@ import lombok.Getter;
 import org.springframework.core.Ordered;
 
 
+/**
+ * Web过滤器顺序枚举类
+ * <p>
+ * 定义了Web层各个过滤器的执行顺序，通过实现{@link Ordered}接口来指定优先级。
+ * 过滤器按照order值从小到大的顺序执行，值越小优先级越高。
+ * </p>
+ *
+ * @author Qbit Framework
+ * @see Ordered
+ * @see DescriptiveEnum
+ */
 @AllArgsConstructor
 @Getter
 public enum WebFilterOrdered implements Ordered, DescriptiveEnum {

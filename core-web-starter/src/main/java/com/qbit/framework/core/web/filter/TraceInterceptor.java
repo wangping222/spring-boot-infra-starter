@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+
 /**
  * @author Qbit Framework
  */
@@ -27,7 +29,7 @@ public class TraceInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
                                 Exception ex) {
-        MDC.remove(TraceUtils.TRACE_ID);
+        MDC.remove(TRACE_ID);
         MDC.remove(TraceUtils.SPAN_ID);
     }
 

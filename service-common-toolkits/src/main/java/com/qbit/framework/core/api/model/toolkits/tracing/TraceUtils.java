@@ -6,14 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.SPAN_ID;
+import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+
 /**
  * @author Qbit Framework
  */
 public final class TraceUtils {
-    // MDC 中的 key
-    public static final String TRACE_ID = "traceId";
-    public static final String SPAN_ID = "spanId";
-
     // HTTP 请求头名称
     public static final String TRACE_ID_HEADER = "X-Trace-Id";
     public static final String SPAN_ID_HEADER = "X-Span-Id";
