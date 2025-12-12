@@ -19,6 +19,17 @@ import java.util.Locale;
 public class SpringI18nMessageSourceInitializer implements SystemInitializer {
 
 
+    /**
+     * @return 获取当前请求的 Locale
+     */
+    private static Locale getWebRequestLocal(LocaleResolver localeResolver) {
+        HttpServletRequest request = HttpServletRequestUtils.getContextRequestOfNullable();
+        if (request == null) {
+            return Locale.ENGLISH;
+        }
+        return localeResolver.resolveLocale(request);
+    }
+
     @Override
     public boolean requireInitialize() {
         return true;
@@ -36,17 +47,6 @@ public class SpringI18nMessageSourceInitializer implements SystemInitializer {
                 log.info("un enabled i18n supported");
             }
         }
-    }
-
-    /**
-     * @return 获取当前请求的 Locale
-     */
-    private static Locale getWebRequestLocal(LocaleResolver localeResolver) {
-        HttpServletRequest request = HttpServletRequestUtils.getContextRequestOfNullable();
-        if (request == null) {
-            return Locale.ENGLISH;
-        }
-        return localeResolver.resolveLocale(request);
     }
 
 }

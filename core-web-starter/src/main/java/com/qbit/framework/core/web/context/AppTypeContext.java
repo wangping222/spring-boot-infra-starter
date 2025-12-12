@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * @author Qbit Framework
+ */
 @UtilityClass
 public class AppTypeContext {
 

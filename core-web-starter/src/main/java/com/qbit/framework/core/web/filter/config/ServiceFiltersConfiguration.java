@@ -1,16 +1,19 @@
 package com.qbit.framework.core.web.filter.config;
 
 import com.qbit.framework.core.web.filter.ApiLoggingFilter;
-import com.qbit.framework.core.web.filter.content.ContentCachingRequestFilter;
 import com.qbit.framework.core.web.filter.ErrorHandlingFilter;
+import com.qbit.framework.core.web.filter.content.ContentCachingRequestFilter;
 import com.qbit.framework.core.web.filter.order.WebFilterOrdered;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 
+/**
+ * @author Qbit Framework
+ */
 @AutoConfiguration
 @EnableConfigurationProperties(ServiceFiltersProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)

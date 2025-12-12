@@ -12,13 +12,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * @author Qbit Framework
+ */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class TraceFilter extends OncePerRequestFilter {
     private static final String TRACE_ID = "X-TraceId";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
+                                    FilterChain chain) throws ServletException, IOException {
         String traceId = getOrCreateTraceId(request);
         response.setHeader(TRACE_ID, traceId);
         try (MdcTraceContext ignored = MdcTraceContext.put(TRACE_ID, traceId)) {

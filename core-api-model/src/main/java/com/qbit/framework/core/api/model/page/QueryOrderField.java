@@ -1,6 +1,8 @@
 package com.qbit.framework.core.api.model.page;
 
-
+/**
+ * @author Qbit Framework
+ */
 public interface QueryOrderField {
     /**
      * 工厂方法，方便用户传参

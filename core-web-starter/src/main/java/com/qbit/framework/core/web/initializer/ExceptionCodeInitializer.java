@@ -5,6 +5,9 @@ import com.qbit.framework.core.api.model.toolkits.exception.factory.CustomerExce
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * @author Qbit Framework
+ */
 @Slf4j
 public class ExceptionCodeInitializer implements SystemInitializer {
     @Override

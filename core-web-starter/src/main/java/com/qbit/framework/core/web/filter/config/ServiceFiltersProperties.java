@@ -1,11 +1,13 @@
 package com.qbit.framework.core.web.filter.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-import lombok.Data;
-
+/**
+ * @author Qbit Framework
+ */
 @Data
 @ConfigurationProperties(prefix = "service.filters")
 public class ServiceFiltersProperties {

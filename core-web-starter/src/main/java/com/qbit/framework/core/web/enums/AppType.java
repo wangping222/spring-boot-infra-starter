@@ -7,6 +7,9 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+/**
+ * @author Qbit Framework
+ */
 @AllArgsConstructor
 @Getter
 public enum AppType {

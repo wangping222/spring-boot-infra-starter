@@ -5,6 +5,9 @@ import com.qbit.framework.core.api.model.toolkits.enums.DescriptiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * @author Qbit Framework
+ */
 @Getter
 @AllArgsConstructor
 public enum PrincipalType implements DescriptiveEnum {

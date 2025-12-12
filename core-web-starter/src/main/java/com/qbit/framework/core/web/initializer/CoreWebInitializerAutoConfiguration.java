@@ -6,6 +6,9 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * @author Qbit Framework
+ */
 @AutoConfiguration
 public class CoreWebInitializerAutoConfiguration {
 

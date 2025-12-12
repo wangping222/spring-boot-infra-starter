@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+/**
+ * @author Qbit Framework
+ */
 public interface PageQuery<OrderField> {
 
     /**

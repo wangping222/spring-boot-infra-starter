@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.page;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * @author Qbit Framework
+ */
 @AllArgsConstructor
 @Getter
 public enum QueryType {

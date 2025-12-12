@@ -10,6 +10,9 @@ import org.springframework.lang.NonNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * @author Qbit Framework
+ */
 @Slf4j
 public class ApplicationContextUtils implements ApplicationContextAware {
 

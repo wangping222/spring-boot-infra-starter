@@ -5,6 +5,9 @@ import jakarta.servlet.ServletInputStream;
 
 import java.io.ByteArrayInputStream;
 
+/**
+ * @author Qbit Framework
+ */
 public class CachedBodyServletInputStream extends ServletInputStream {
 
     private final ByteArrayInputStream buffer;

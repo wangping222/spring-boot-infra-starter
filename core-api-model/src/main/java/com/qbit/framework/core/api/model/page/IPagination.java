@@ -4,6 +4,9 @@ package com.qbit.framework.core.api.model.page;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Qbit Framework
+ */
 public interface IPagination<T> extends Serializable {
 
     long getTotal();

@@ -7,6 +7,9 @@ import org.springframework.lang.NonNull;
 import java.beans.Transient;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author Qbit Framework
+ */
 @Data
 public abstract class AbstractPageQuery<OrderField extends QueryOrderField> implements PageQuery<OrderField> {
 

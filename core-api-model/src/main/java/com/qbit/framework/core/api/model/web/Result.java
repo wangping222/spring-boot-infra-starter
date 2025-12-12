@@ -3,6 +3,9 @@ package com.qbit.framework.core.api.model.web;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * @author Qbit Framework
+ */
 @Data
 @Accessors(chain = true)
 public class Result<T> {
