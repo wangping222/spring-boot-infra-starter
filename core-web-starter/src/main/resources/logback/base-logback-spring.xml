@@ -2,6 +2,14 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
+    <springProperty name="SLS_ENDPOINT" scope="context" source="aliyun.sls.endpoint"/>
+
+    <springProperty name="SLS_ACCESS_KEY_ID" scope="context" source="aliyun.sls.accessKeyId"/>
+    <springProperty name="SLS_ACCESS_KEY_SECRET" scope="context" source="aliyun.sls.accessKeySecret"/>
+    <springProperty name="SLS_PROJECT" scope="context" source="aliyun.sls.project"/>
+    <springProperty name="SLS_LOG_STORE" scope="context" source="aliyun.sls.logStore"/>
+
+
     <conversionRule conversionWord="msg"
                     converterClass="com.qbit.framework.core.api.model.toolkits.logging.SensitiveDataConverter"/>
 
@@ -49,7 +57,7 @@
         <logstore>${SLS_LOG_STORE}</logstore>
 
         <!-- 可选配置 -->
-        <source>qbit-assets</source>
+        <source>infra-starter</source>
         <topic>application-logs</topic>
 
         <!-- 性能配置 -->
