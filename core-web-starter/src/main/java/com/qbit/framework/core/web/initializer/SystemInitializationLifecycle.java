@@ -1,9 +1,10 @@
 package com.qbit.framework.core.web.initializer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.OrderComparator;
 import org.springframework.util.StopWatch;
 
@@ -19,38 +20,81 @@ import java.util.stream.Collectors;
  * @author muyue
  */
 @Slf4j
-public class ApplicationStartedListener implements ApplicationListener<ApplicationReadyEvent> {
+public class SystemInitializationLifecycle implements SmartLifecycle, ApplicationContextAware {
+
 
     /**
-     * 初始化状态标记，用于确保初始化只执行一次
+     * 初始化状态标记
      */
-    private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+    private final AtomicBoolean running = new AtomicBoolean(false);
+
+    /**
+     * 初始化是否已经执行过（防止极端情况下重复调用）
+     */
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     /**
      * 初始化超时时间（秒）
      */
     private static final int INITIALIZATION_TIMEOUT_SECONDS = 300;
 
-    /**
-     * 应用启动事件处理方法
-     * 使用 ApplicationReadyEvent 确保在应用接收请求前完成初始化
-     *
-     * @param event Spring应用就绪事件
-     */
+    private ApplicationContext applicationContext;
+
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
-        if (INITIALIZED.compareAndSet(false, true)) {
-            try {
-                execSystemInitializers(event.getApplicationContext());
-            } catch (Exception e) {
-                log.error("System initialization failed, application may not function correctly", e);
-                // 根据业务需求决定是否需要终止应用启动
-                // System.exit(1);
-            }
-        } else {
-            log.warn("System initialization already executed, skipping duplicate execution");
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void start() {
+        // SmartLifecycle 保证 start() 在单线程顺序调用
+        // 这里的 CAS 更多是“防御式编程”
+        if (!initialized.compareAndSet(false, true)) {
+            log.warn("System initialization already executed, skipping");
+            return;
+        }
+
+        log.info("System initialization started");
+
+        try {
+            execSystemInitializers(applicationContext);
+            running.set(true);
+            log.info("System initialization completed successfully");
+        } catch (Exception e) {
+            log.error("System initialization failed, application startup aborted", e);
+            // 直接抛异常 → Spring Boot 启动失败 → 不会暴露 HTTP
+            throw e;
         }
     }
+
+    @Override
+    public void stop() {
+        running.set(false);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    /**
+     * 关键点：
+     * phase 必须早于 WebServerLifecycle
+     * WebServer 的 phase = Integer.MAX_VALUE
+     */
+    @Override
+    public int getPhase() {
+        return Integer.MIN_VALUE;
+    }
+
+    /**
+     * 默认 SmartLifecycle 是自动启动的
+     */
+    @Override
+    public boolean isAutoStartup() {
+        return true;
+    }
+
 
     /**
      * 执行系统初始化器
@@ -261,5 +305,6 @@ public class ApplicationStartedListener implements ApplicationListener<Applicati
             Thread.currentThread().interrupt();
         }
     }
+
 
 }
