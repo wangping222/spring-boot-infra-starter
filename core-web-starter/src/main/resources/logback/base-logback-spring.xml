@@ -35,5 +35,32 @@
         </rollingPolicy>
     </appender>
 
+    <!-- 阿里云 SLS Appender -->
+    <appender name="SLS" class="com.qbit.framework.core.api.model.toolkits.logging.SlsAppender">
+        <!-- SLS 连接配置 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <accessKeyId>${SLS_ACCESS_KEY_ID}</accessKeyId>
+        <accessKeySecret>${SLS_ACCESS_KEY_SECRET}</accessKeySecret>
+
+        <endpoint>${SLS_ENDPOINT}</endpoint>
+        <project>${SLS_PROJECT}</project>
+        <logstore>${SLS_LOG_STORE}</logstore>
+
+        <!-- 可选配置 -->
+        <source>qbit-assets</source>
+        <topic>application-logs</topic>
+
+        <!-- 性能配置 -->
+        <batchSize>100</batchSize>
+        <flushInterval>3000</flushInterval>
+        <maxRetries>3</maxRetries>
+
+        <!-- 日志格式化（可选） -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
 
 </configuration>
