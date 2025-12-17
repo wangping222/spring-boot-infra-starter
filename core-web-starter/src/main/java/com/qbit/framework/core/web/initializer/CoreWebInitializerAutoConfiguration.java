@@ -2,6 +2,7 @@ package com.qbit.framework.core.web.initializer;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +13,9 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public class CoreWebInitializerAutoConfiguration {
 
-    @Bean(name = "applicationStartedListener")
-    @ConditionalOnMissingBean(name = "applicationStartedListener")
-    public ApplicationListener<ApplicationStartedEvent> applicationStartedListener() {
+    @Bean
+    @ConditionalOnMissingBean
+    public ApplicationListener<ApplicationReadyEvent> applicationStartedListener() {
         return new ApplicationStartedListener();
     }
 
