@@ -57,7 +57,7 @@
         <logstore>${SLS_LOG_STORE}</logstore>
 
         <!-- 可选配置 -->
-        <source>infra-starter</source>
+        <source>${applicationName}</source>
         <topic>application-logs</topic>
 
         <!-- 性能配置 -->
