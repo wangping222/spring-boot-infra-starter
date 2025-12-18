@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
  * @author Qbit Framework
  */
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionAdvice {
 
     @ExceptionHandler(CustomerException.class)
