@@ -1,7 +1,11 @@
 package com.qbit.framework.controller;
 
+import com.qbit.framework.core.api.model.toolkits.exception.factory.CustomerExceptionFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -31,5 +35,10 @@ public class TestController {
     public String testPostLog(@RequestBody UserDTO userDTO) {
 
         return "hello";
+    }
+
+    @PostMapping("exception")
+    public String testException() {
+        throw CustomerExceptionFactory.badRequest("400");
     }
 }

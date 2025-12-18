@@ -1,4 +1,7 @@
 framework:
+  web:
+    exception-advice:
+      enabled: true
   feign:
     api:
       base-url: https://circle-test.qbitnetwork.com
