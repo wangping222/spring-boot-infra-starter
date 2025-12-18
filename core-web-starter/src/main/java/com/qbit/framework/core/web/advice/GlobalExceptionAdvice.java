@@ -1,4 +1,4 @@
-package com.qbit.framework.core.web.handler;
+package com.qbit.framework.core.web.advice;
 
 import com.qbit.framework.core.api.model.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.core.api.model.toolkits.exception.type.CustomerException;
@@ -21,16 +21,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 /**
- * 全局异常处理
+ * 全局异常处理 Advice
  *
  * 统一将异常转换为 {@link Result} 响应，
  * 业务异常优先使用 {@link CustomerException}，
  * 其他未捕获异常统一转换为通用错误码。
+ *
+ * <p>注意：此类不会自动注册，需要使用方主动导入。
+ * 使用方式：在配置类中添加 {@code @Import(GlobalExceptionAdvice.class)}
+ *
+ * @author Qbit Framework
  */
 @Slf4j
-@RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class GlobalExceptionHandler {
+public class GlobalExceptionAdvice {
 
     @ExceptionHandler(CustomerException.class)
     public ResponseEntity<Result<Object>> handleCustomerException(CustomerException e) {
