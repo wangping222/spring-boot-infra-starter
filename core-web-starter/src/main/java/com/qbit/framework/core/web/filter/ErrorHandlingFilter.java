@@ -31,13 +31,19 @@ public class ErrorHandlingFilter implements Filter, Ordered {
     }
 
     private void handleBusinessException(HttpServletResponse response, CustomerException e) throws IOException {
-        log.error("Business exception", e);
+        // 记录完整异常信息，方便排查问题
+        log.warn("Business exception in filter: code={}, message={}", e.getCode(), e.getMessage());
         // 如果响应已提交，则不再尝试写入，避免潜在循环
         if (response.isCommitted()) {
             return;
         }
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        writeErrorResponse(response, DefaultExceptionCode.COMMON_ERROR.getCode(), e.getMessage());
+        // 使用异常中的 HTTP 状态码，默认为 500
+        int status = e.getHttpStatus() != null ? 
+                e.getHttpStatus().value() : HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        response.setStatus(status);
+        // CustomerException 是业务异常，可以返回给客户端
+        String code = e.getCode() != null ? e.getCode() : DefaultExceptionCode.COMMON_ERROR.getCode();
+        writeErrorResponse(response, code, e.getMessage());
     }
 
     private void handleException(HttpServletResponse response, Exception e) throws IOException {
