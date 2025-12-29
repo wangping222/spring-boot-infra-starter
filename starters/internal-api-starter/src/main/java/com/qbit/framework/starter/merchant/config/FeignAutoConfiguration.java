@@ -46,7 +46,7 @@ public class FeignAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(name = "feignTraceInterceptor")
-    @ConditionalOnClass(name = "com.qbit.framework.core.api.model.toolkits.tracing.TraceUtils")
+    @ConditionalOnClass(name = "com.qbit.framework.core.toolkits.tracing.TraceUtils")
     public RequestInterceptor feignTraceInterceptor() {
         return new com.qbit.framework.starter.merchant.interceptor.FeignTraceInterceptor();
     }

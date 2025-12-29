@@ -1,12 +1,12 @@
 package com.qbit.framework.starter.merchant.interceptor;
 
-import com.qbit.framework.core.api.model.toolkits.tracing.TraceUtils;
+import com.qbit.framework.core.toolkits.tracing.TraceUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.SPAN_ID;
-import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+import static com.qbit.framework.core.toolkits.constants.WebConstants.SPAN_ID;
+import static com.qbit.framework.core.toolkits.constants.WebConstants.TRACE_ID;
 
 /**
  * Feign 链路追踪拦截器

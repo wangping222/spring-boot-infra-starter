@@ -1,6 +1,6 @@
 package com.qbit.framework.core.web.filter;
 
-import com.qbit.framework.core.api.model.toolkits.tracing.context.MdcTraceContext;
+import com.qbit.framework.core.toolkits.tracing.context.MdcTraceContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+import static com.qbit.framework.core.toolkits.constants.WebConstants.TRACE_ID;
 
 /**
  * @author Qbit Framework

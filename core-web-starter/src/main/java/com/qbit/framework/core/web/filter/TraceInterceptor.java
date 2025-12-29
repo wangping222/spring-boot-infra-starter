@@ -1,13 +1,13 @@
 package com.qbit.framework.core.web.filter;
 
-import com.qbit.framework.core.api.model.toolkits.tracing.TraceUtils;
+import com.qbit.framework.core.toolkits.tracing.TraceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.SPAN_ID;
-import static com.qbit.framework.core.api.model.toolkits.constants.WebConstants.TRACE_ID;
+import static com.qbit.framework.core.toolkits.constants.WebConstants.SPAN_ID;
+import static com.qbit.framework.core.toolkits.constants.WebConstants.TRACE_ID;
 
 /**
  * @author Qbit Framework

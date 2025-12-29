@@ -1,7 +1,7 @@
 package com.qbit.framework.core.web.initializer;
 
-import com.qbit.framework.core.api.model.toolkits.i18n.I18nMessageUtils;
-import com.qbit.framework.core.api.model.toolkits.request.HttpServletRequestUtils;
+import com.qbit.framework.core.toolkits.i18n.I18nMessageUtils;
+import com.qbit.framework.core.toolkits.request.HttpServletRequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;

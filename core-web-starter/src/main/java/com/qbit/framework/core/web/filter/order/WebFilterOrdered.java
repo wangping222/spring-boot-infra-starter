@@ -1,6 +1,6 @@
 package com.qbit.framework.core.web.filter.order;
 
-import com.qbit.framework.core.api.model.toolkits.enums.DescriptiveEnum;
+import com.qbit.framework.core.toolkits.enums.DescriptiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.core.Ordered;

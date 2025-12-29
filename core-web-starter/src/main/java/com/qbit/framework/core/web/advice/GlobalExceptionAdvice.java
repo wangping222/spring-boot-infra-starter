@@ -1,14 +1,12 @@
 package com.qbit.framework.core.web.advice;
 
-import com.qbit.framework.core.api.model.toolkits.exception.code.DefaultExceptionCode;
-import com.qbit.framework.core.api.model.toolkits.exception.type.CustomerException;
-import com.qbit.framework.core.api.model.toolkits.exception.type.SystemException;
+import com.qbit.framework.core.toolkits.exception.code.DefaultExceptionCode;
+import com.qbit.framework.core.toolkits.exception.type.CustomerException;
+import com.qbit.framework.core.toolkits.exception.type.SystemException;
 import com.qbit.framework.core.api.model.web.Result;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
