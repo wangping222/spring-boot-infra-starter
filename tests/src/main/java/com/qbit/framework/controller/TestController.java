@@ -41,4 +41,16 @@ public class TestController {
     public String testException() {
         throw CustomerExceptionFactory.badRequest("400");
     }
+
+
+    @PostMapping("long-time")
+    public  String longTimeWork(){
+        try {
+            // 告警阈值200ms
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
 }

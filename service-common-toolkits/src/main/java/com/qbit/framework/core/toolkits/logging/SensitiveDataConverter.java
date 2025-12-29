@@ -31,10 +31,10 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 public class SensitiveDataConverter extends MessageConverter {
-    private static final Pattern PHONE_PATTERN = Pattern.compile("(1[3-9]\\d)(\\d{4})(\\d{4})");
-    private static final Pattern ID_CARD_PATTERN = Pattern.compile("(\\d{6})(\\d{8})(\\d{3}[0-9Xx])");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("(\\w{1,3})\\w*(@\\w+\\.\\w+)");
-    private static final Pattern BANK_CARD_PATTERN = Pattern.compile("(\\d{4})(\\d+)(\\d{4})");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("\\b(1[3-9]\\d)(\\d{4})(\\d{4})\\b");
+    private static final Pattern ID_CARD_PATTERN = Pattern.compile("\\b(\\d{6})(\\d{8})(\\d{3}[0-9Xx])\\b");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("([a-zA-Z0-9][a-zA-Z0-9._%+-]{0,2})[a-zA-Z0-9._%+-]*(@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})");
+    private static final Pattern BANK_CARD_PATTERN = Pattern.compile("\\b(\\d{4})(\\d{5,11})(\\d{4})\\b");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("(password|pwd|密码)[\"':\\s=]+([^\\s,\"'\\}\\]]+)", Pattern.CASE_INSENSITIVE);
 
     @Override
