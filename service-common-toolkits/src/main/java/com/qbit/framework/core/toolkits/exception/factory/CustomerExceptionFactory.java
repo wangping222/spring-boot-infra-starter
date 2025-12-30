@@ -8,7 +8,6 @@ import com.qbit.framework.core.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.core.toolkits.exception.type.CustomerException;
 import com.qbit.framework.core.toolkits.i18n.I18nMessageUtils;
 import com.qbit.framework.core.toolkits.message.MessageFormatter;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -84,19 +83,33 @@ public class CustomerExceptionFactory {
             info.setMessage(ce.getMessage());
         } else {
             info.setCode(ERROR);
-            info.setMessage(e.getMessage() == null ? "internal server error" : e.getMessage());
+            info.setMessage(e.getMessage() == null ? HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() : e.getMessage());
         }
         return info;
     }
 
     public static ExceptionInfo getMessage(String code, Object... args) {
+        List<BusinessCodeDTO> businessCodes = loadBusinessCodes(code);
+
+        if (CollectionUtils.isEmpty(businessCodes)) {
+            return ExceptionInfo.unknown(code);
+        }
+
         Locale locale = I18nMessageUtils.requireLocale();
+        BusinessCodeDTO businessCode = businessCodes.stream()
+                .filter(bc -> locale.getLanguage().equals(bc.getLanguage()))
+                .findFirst()
+                .orElse(businessCodes.get(0));
 
-        BusinessCodeDTO businessCode;
+        ExceptionInfo info = new ExceptionInfo();
+        info.setCode(businessCode.getCode());
+        info.setMessage(MessageFormatter.java().format(businessCode.getMessageTemplate(), args));
+        return info;
+    }
 
-        List<BusinessCodeDTO> businessCodes;
+    private static List<BusinessCodeDTO> loadBusinessCodes(String code) {
         try {
-            businessCodes = BUSINESS_CODE_CACHE.get(code, k -> {
+            return BUSINESS_CODE_CACHE.get(code, k -> {
                 try {
                     return businessCodeService.list(k);
                 } catch (Exception ex) {
@@ -106,23 +119,8 @@ public class CustomerExceptionFactory {
             });
         } catch (Exception e) {
             log.warn("Cache retrieval failed for code {}", code, e);
-            businessCodes = Collections.emptyList();
+            return Collections.emptyList();
         }
-
-        if (CollectionUtils.isEmpty(businessCodes)) {
-            return ExceptionInfo.unknown(code);
-        } else {
-            businessCode =
-                    businessCodes.stream()
-                            .filter(s -> locale.getLanguage().equals(s.getLanguage()))
-                            .findFirst()
-                            .orElse(businessCodes.get(0));
-        }
-
-        ExceptionInfo info = new ExceptionInfo();
-        info.setCode(businessCode.getCode());
-        info.setMessage(MessageFormatter.java().format(businessCode.getMessageTemplate(), args));
-        return info;
     }
 
     public CustomerException createException(String code, Object... args) {
@@ -130,16 +128,4 @@ public class CustomerExceptionFactory {
         return new CustomerException(info.getCode(), info.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @Data
-    public static class ExceptionInfo {
-        private String code;
-        private String message;
-
-        public static ExceptionInfo unknown(String code) {
-            ExceptionInfo info = new ExceptionInfo();
-            info.setCode(ERROR);
-            info.setMessage("unknown code：" + code);
-            return info;
-        }
-    }
 }
