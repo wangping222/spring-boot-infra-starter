@@ -82,6 +82,19 @@
             <artifactId>dynamic-tp-spring-boot-starter-common</artifactId>
             <version>1.2.2-x</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- 2. Redisson 核心依赖（分布式锁/高级功能） -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <!-- 版本适配：推荐3.20+，兼容Spring Boot 3.x -->
+            <version>3.23.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
