@@ -1,12 +1,4 @@
-framework:
-  web:
-    exception-advice:
-      enabled: true
-  feign:
-    api:
-      base-url: https://circle-test.qbitnetwork.com
-      secret: 6YIJXQkhs9mxOQs+74uIIA==
-      enabled: true
+
 spring:
   profiles:
     active: dev
@@ -16,3 +8,21 @@ spring:
     import:
       - ${spring.profiles.active}/application.dynamictp.yml
       - ${spring.profiles.active}/application.redis.yml
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
+
+
+framework:
+  web:
+    exception-advice:
+      enabled: true
+  feign:
+    api:
+      base-url: https://circle-test.qbitnetwork.com
+      secret: 6YIJXQkhs9mxOQs+74uIIA==
+      enabled: true

@@ -17,6 +17,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -152,6 +153,22 @@ public class GlobalExceptionAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 DefaultExceptionCode.COMMON_ERROR.getCode(),
                 "系统状态异常，请稍后重试"
+        );
+    }
+
+    /**
+     * 处理资源未找到异常
+     * 如：访问不存在的URL路径或静态资源
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Result<Object>> handleNoResourceFoundException(
+            NoResourceFoundException e) {
+        log.warn("Resource not found: {}", e.getResourcePath());
+        
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                DefaultExceptionCode.NOT_FOUND.getCode(),
+                "请求的资源不存在"
         );
     }
 
