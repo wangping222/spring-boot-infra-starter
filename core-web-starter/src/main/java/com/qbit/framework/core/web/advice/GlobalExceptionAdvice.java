@@ -14,9 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
@@ -169,6 +173,90 @@ public class GlobalExceptionAdvice {
                 HttpStatus.NOT_FOUND,
                 DefaultExceptionCode.NOT_FOUND.getCode(),
                 "请求的资源不存在"
+        );
+    }
+
+    /**
+     * 处理HTTP请求方法不支持异常
+     * 如：接口只支持POST但使用了GET请求
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Result<Object>> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e) {
+        log.warn("HTTP method not supported: {} for {}", e.getMethod(), e.getMessage());
+        
+        return buildResponse(
+                HttpStatus.METHOD_NOT_ALLOWED,
+                DefaultExceptionCode.METHOD_NOT_ALLOWED.getCode(),
+                String.format("不支持的请求方法: %s", e.getMethod())
+        );
+    }
+
+    /**
+     * 处理媒体类型不支持异常
+     * 如：接口要求application/json但发送了application/xml
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Result<Object>> handleHttpMediaTypeNotSupportedException(
+            HttpMediaTypeNotSupportedException e) {
+        log.warn("Media type not supported: {}", e.getContentType());
+        
+        return buildResponse(
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                DefaultExceptionCode.UNSUPPORTED_MEDIA_TYPE.getCode(),
+                "不支持的媒体类型，请使用正确的Content-Type"
+        );
+    }
+
+    /**
+     * 处理缺少请求参数异常
+     * 如：接口要求参数userId但请求中未提供
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Result<Object>> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException e) {
+        log.warn("Missing request parameter: {} of type {}", e.getParameterName(), e.getParameterType());
+        
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                DefaultExceptionCode.BAD_REQUEST.getCode(),
+                String.format("缺少必需参数: %s", e.getParameterName())
+        );
+    }
+
+    /**
+     * 处理方法参数类型不匹配异常
+     * 如：参数要求Integer但传入了非数字字符串
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Result<Object>> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e) {
+        log.warn("Type mismatch for parameter: {}, required type: {}, provided value: {}", 
+                e.getName(), 
+                e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "unknown",
+                e.getValue());
+        
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                DefaultExceptionCode.BAD_REQUEST.getCode(),
+                String.format("参数类型错误: %s 应为 %s 类型", 
+                        e.getName(), 
+                        e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "未知")
+        );
+    }
+
+    /**
+     * 处理空指针异常
+     * 这通常是代码缺陷，需要重点关注和修复
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Result<Object>> handleNullPointerException(NullPointerException e) {
+        log.error("NullPointerException occurred - this indicates a code defect that should be fixed", e);
+        
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                DefaultExceptionCode.COMMON_ERROR.getCode(),
+                "系统内部错误，请稍后重试"
         );
     }
 

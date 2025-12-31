@@ -37,6 +37,16 @@ public enum DefaultExceptionCode implements ExceptionCode {
     NOT_FOUND("404", "资源不存在", HttpStatus.NOT_FOUND),
 
     /**
+     * 不支持的请求方法 - 如接口只支持POST但使用了GET
+     */
+    METHOD_NOT_ALLOWED("405", "不支持的请求方法", HttpStatus.METHOD_NOT_ALLOWED),
+
+    /**
+     * 不支持的媒体类型 - 如要求JSON但发送了XML
+     */
+    UNSUPPORTED_MEDIA_TYPE("415", "不支持的媒体类型", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+
+    /**
      * 请求过于频繁 - 触发限流规则
      */
     TOO_MANY_REQUESTS("429", "请求过于频繁", HttpStatus.TOO_MANY_REQUESTS),
