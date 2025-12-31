@@ -14,5 +14,5 @@ spring:
     name: tests
   config:
     import:
-      - classpath:/${spring.profiles.active}/application.dynamictp.yml
-      - classpath:/${spring.profiles.active}/application.redis.yml
+      - ${spring.profiles.active}/application.dynamictp.yml
+      - ${spring.profiles.active}/application.redis.yml
