@@ -8,7 +8,9 @@ framework:
       secret: 6YIJXQkhs9mxOQs+74uIIA==
       enabled: true
 spring:
+  profiles:
+    active: dev
   application:
     name: tests
   config:
-    import: classpath:/config/application.dynamictp.yml
+    import: classpath:/${spring.profiles.active}/application-dynamictp.yml
