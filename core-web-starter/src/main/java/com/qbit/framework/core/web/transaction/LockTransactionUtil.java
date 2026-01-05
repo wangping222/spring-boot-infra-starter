@@ -56,7 +56,9 @@ public class LockTransactionUtil {
      * 在分布式锁和事务保护下执行业务逻辑
      */
     public static <T> T execute(RLock lock, TransactionTemplate transactionTemplate, Supplier<T> action) {
-        return execute(lock, DEFAULT_WAIT_TIME, DEFAULT_LEASE_TIME, TimeUnit.SECONDS, transactionTemplate, action);
+        return new ExecutionBuilder<T>(lock, transactionTemplate)
+                .action(action)
+                .execute();
     }
 
     /**
@@ -92,9 +94,9 @@ public class LockTransactionUtil {
     /**
      * 在现有事务中执行带锁的操作（带回调）
      */
-    public static <T> T executeInTransaction(RLock lock, Supplier<T> action, 
+    public static <T> T executeInTransaction(RLock lock, Supplier<T> action,
                                               Consumer<T> afterCommit, Runnable afterRollback) {
-        return executeInTransaction(lock, DEFAULT_WAIT_TIME, DEFAULT_LEASE_TIME, TimeUnit.SECONDS, 
+        return executeInTransaction(lock, DEFAULT_WAIT_TIME, DEFAULT_LEASE_TIME, TimeUnit.SECONDS,
                 action, afterCommit, afterRollback);
     }
 
@@ -108,31 +110,42 @@ public class LockTransactionUtil {
             throw new IllegalStateException("No active transaction. Use execute() instead.");
         }
 
+        acquireLock(lock, waitTime, leaseTime, timeUnit);
+
+        // 先注册同步器，确保无论 action 是否成功，锁都能被释放
+        ResultHolder<T> holder = new ResultHolder<>();
+        registerSynchronization(lock, holder, afterCommit, afterRollback);
+
+        // 执行业务逻辑
+        T result = action.get();
+        holder.result = result;
+
+        return result;
+    }
+
+    /**
+     * 获取分布式锁
+     */
+    private static void acquireLock(RLock lock, long waitTime, long leaseTime, TimeUnit timeUnit) {
         boolean acquired;
         try {
             acquired = lock.tryLock(waitTime, leaseTime, timeUnit);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new LockAcquireException("Lock acquisition interrupted", e);
+            throw new LockAcquireException("Lock acquisition interrupted: " + lock.getName(), e);
         }
 
         if (!acquired) {
             throw new LockAcquireException("Failed to acquire lock: " + lock.getName());
         }
 
-        log.debug("Lock acquired in transaction: {}", lock.getName());
-
-        T result = action.get();
-
-        registerSynchronization(lock, result, afterCommit, afterRollback);
-
-        return result;
+        log.debug("Lock acquired: {}", lock.getName());
     }
 
     /**
      * 注册事务同步器，处理回调和锁释放
      */
-    private static <T> void registerSynchronization(RLock lock, T result,
+    private static <T> void registerSynchronization(RLock lock, ResultHolder<T> holder,
                                                      Consumer<T> afterCommit, Runnable afterRollback) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -140,7 +153,7 @@ public class LockTransactionUtil {
                 try {
                     if (status == STATUS_COMMITTED && afterCommit != null) {
                         log.debug("Transaction committed, executing afterCommit callback");
-                        afterCommit.accept(result);
+                        afterCommit.accept(holder.result);
                     } else if (status == STATUS_ROLLED_BACK && afterRollback != null) {
                         log.debug("Transaction rolled back, executing afterRollback callback");
                         afterRollback.run();
@@ -163,6 +176,13 @@ public class LockTransactionUtil {
         } catch (Exception e) {
             log.error("Failed to release lock: {}", lock.getName(), e);
         }
+    }
+
+    /**
+     * 结果持有器，用于在注册同步器后设置结果
+     */
+    private static class ResultHolder<T> {
+        T result;
     }
 
     /**
@@ -232,32 +252,22 @@ public class LockTransactionUtil {
                 throw new IllegalStateException("Action must be set");
             }
 
-            // 1. 获取分布式锁
-            boolean acquired;
-            try {
-                acquired = lock.tryLock(waitTime, leaseTime, timeUnit);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new LockAcquireException("Lock acquisition interrupted", e);
-            }
-
-            if (!acquired) {
-                throw new LockAcquireException("Failed to acquire lock: " + lock.getName());
-            }
-
-            log.debug("Lock acquired: {}", lock.getName());
+            acquireLock(lock, waitTime, leaseTime, timeUnit);
 
             try {
-                // 2. 在事务中执行
                 return transactionTemplate.execute(status -> {
-                    T result = action.get();
+                    // 先注册同步器，确保锁释放
+                    ResultHolder<T> holder = new ResultHolder<>();
+                    registerSynchronization(lock, holder, afterCommit, afterRollback);
 
-                    // 3. 注册事务同步器
-                    registerSynchronization(lock, result, afterCommit, afterRollback);
+                    // 执行业务逻辑
+                    T result = action.get();
+                    holder.result = result;
 
                     return result;
                 });
             } catch (Exception e) {
+                // 如果事务还未开始（同步器未激活），需手动释放锁
                 if (!TransactionSynchronizationManager.isSynchronizationActive()) {
                     releaseLock(lock);
                 }
