@@ -1,4 +1,4 @@
-package com.qbit.framework.core.toolkits.exception.type;
+package com.qbit.framework.core.toolkits.exception;
 
 import lombok.Getter;
 

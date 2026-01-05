@@ -1,249 +1,473 @@
-# 异常处理使用指南
+# 异常处理框架使用指南
 
 ## 概述
 
-经过优化后的异常处理体系提供了更灵活、更易用的API，支持多种创建方式和链式调用。
+本框架提供了一套完整的异常处理机制，包括两种异常类型、异常码管理、异常工厂以及异常信息响应。
 
-## 核心组件
+### 异常类型
 
-### 1. CustomerException - 业务异常
-用于处理业务逻辑中的异常情况，支持自定义错误码、消息和HTTP状态码。
+- **CustomerException**：业务异常，用于处理业务逻辑中的异常，可以向用户展示友好的错误提示
+- **SystemException**：系统异常，用于处理系统级别的异常（如数据库连接失败、配置错误等），通常不应该向用户展示详细信息
 
-### 2. SystemException - 系统异常
-用于处理系统级别的异常（数据库连接、配置错误等），不应向用户展示详细信息。
+---
 
-### 3. CustomerExceptionFactory - 异常工厂
-提供便捷的静态方法创建各种类型的业务异常。
+## 1. ExceptionCode 接口
 
-### 4. ExceptionInfo - 异常信息
-封装异常的错误码、消息和HTTP状态码，可作为API响应。
+### 作用
+定义业务异常码的标准规范，所有业务异常码枚举都应实现此接口。
 
-## 使用方式
+### 核心属性
 
-### 方式1：使用工厂方法（推荐）
+| 方法 | 描述 | 必实现 |
+|-----|-----|-------|
+| `getCode()` | 获取业务错误码（如 USER_001） | 是 |
+| `getDesc()` | 获取中文错误描述 | 是 |
+| `getEnDesc()` | 获取英文错误描述 | 否（默认返回空） |
+| `getLanguage()` | 获取语言标识（zh/en） | 否（默认返回英文） |
+| `getHttpStatus()` | 获取建议的HTTP状态码 | 否（默认500） |
+| `getFormatedMessage(args)` | 格式化错误消息（支持参数替换） | 否（默认实现） |
 
-```java
-// 创建400错误
-throw CustomerExceptionFactory.badRequest("INVALID_PARAM", userId);
-
-// 创建401错误
-throw CustomerExceptionFactory.unauthorized("TOKEN_EXPIRED");
-
-// 创建403错误
-throw CustomerExceptionFactory.forbidden("NO_PERMISSION", resource);
-
-// 创建404错误
-throw CustomerExceptionFactory.notFound("USER_NOT_FOUND", userId);
-
-// 创建429错误
-throw CustomerExceptionFactory.tooManyRequests("RATE_LIMIT_EXCEEDED");
-
-// 创建500错误
-throw CustomerExceptionFactory.internalError("DATABASE_ERROR");
-```
-
-### 方式2：使用枚举（类型安全）
+### 实现示例
 
 ```java
-// 直接使用枚举
-throw CustomerExceptionFactory.of(DefaultExceptionCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
-
-// 使用枚举构建器（可自定义消息）
-throw CustomerExceptionFactory.of(DefaultExceptionCode.UNAUTHORIZED)
-    .message("您的会话已过期，请重新登录")
-    .httpStatus(HttpStatus.UNAUTHORIZED)
-    .build();
-```
-
-### 方式3：使用Builder模式（最灵活）
-
-```java
-// 完全自定义
-throw CustomerException.builder()
-    .code("CUSTOM_ERROR")
-    .message("自定义错误消息")
-    .httpStatus(HttpStatus.FORBIDDEN)
-    .build();
-
-// 使用枚举 + 自定义消息
-throw CustomerException.builder()
-    .code(DefaultExceptionCode.COMMON_ERROR)
-    .message("用户 " + username + " 操作失败")
-    .httpStatus(HttpStatus.BAD_REQUEST)
-    .build();
-```
-
-### 方式4：直接创建
-
-```java
-// 简单创建
-throw new CustomerException("操作失败");
-
-// 完整参数
-throw new CustomerException("INVALID_DATA", "数据格式不正确", HttpStatus.BAD_REQUEST);
-
-// 使用工厂直接创建
-throw CustomerExceptionFactory.create("CUSTOM_CODE", "自定义消息", HttpStatus.CONFLICT);
-```
-
-### 方式5：带消息参数（国际化）
-
-```java
-// 支持占位符，从数据库加载国际化消息
-throw CustomerExceptionFactory.badRequest("USER_AGE_INVALID", minAge, maxAge);
-// 消息模板：用户年龄必须在 {0} 到 {1} 之间
-```
-
-## 系统异常使用
-
-```java
-// 基础用法
-throw new SystemException("配置文件加载失败");
-
-// 带错误码
-throw new SystemException("SYS_DB_001", "数据库连接失败");
-
-// 带原始异常
-try {
-    // 数据库操作
-} catch (SQLException e) {
-    throw new SystemException("数据库查询失败", e);
-}
-
-// 完整参数
-try {
-    // 配置加载
-} catch (IOException e) {
-    throw new SystemException("SYS_CONFIG_001", "配置文件读取失败", e);
-}
-```
-
-## 异常信息提取
-
-```java
-// 从异常提取信息
-ExceptionInfo info = CustomerExceptionFactory.getMessage(exception);
-
-// 获取国际化消息
-ExceptionInfo info = CustomerExceptionFactory.getMessage("USER_NOT_FOUND", userId);
-
-// 构建响应
-return ResponseEntity
-    .status(info.getHttpStatus())
-    .body(info);
-```
-
-## 最佳实践
-
-### 1. 业务异常 vs 系统异常
-
-```java
-// ✅ 业务异常 - 用户可理解的错误
-if (user == null) {
-    throw CustomerExceptionFactory.notFound("USER_NOT_FOUND", userId);
-}
-
-// ✅ 系统异常 - 技术性错误
-try {
-    configLoader.load();
-} catch (IOException e) {
-    throw new SystemException("CONFIG_LOAD_FAILED", "配置加载失败", e);
-}
-```
-
-### 2. 选择合适的HTTP状态码
-
-```java
-// 400 - 客户端请求错误
-throw CustomerExceptionFactory.badRequest("INVALID_EMAIL", email);
-
-// 401 - 未认证
-throw CustomerExceptionFactory.unauthorized("TOKEN_INVALID");
-
-// 403 - 已认证但无权限
-throw CustomerExceptionFactory.forbidden("INSUFFICIENT_PERMISSION");
-
-// 404 - 资源不存在
-throw CustomerExceptionFactory.notFound("RESOURCE_NOT_FOUND", resourceId);
-
-// 429 - 请求过于频繁
-throw CustomerExceptionFactory.tooManyRequests("RATE_LIMIT");
-
-// 500 - 服务器内部错误
-throw CustomerExceptionFactory.internalError("UNEXPECTED_ERROR");
-```
-
-### 3. 使用枚举管理错误码
-
-```java
-public enum OrderExceptionCode implements ExceptionCode {
-    ORDER_NOT_FOUND("ORD_001", "订单不存在"),
-    ORDER_CANCELLED("ORD_002", "订单已取消"),
-    ORDER_PAID("ORD_003", "订单已支付"),
-    INVALID_ORDER_STATUS("ORD_004", "订单状态不正确");
+public enum UserExceptionCode implements ExceptionCode {
+    USER_NOT_FOUND("USER_001", "用户不存在", HttpStatus.NOT_FOUND),
+    USER_DISABLED("USER_002", "用户已被禁用", HttpStatus.FORBIDDEN),
+    INVALID_PASSWORD("USER_003", "密码不正确", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String desc;
+    private final HttpStatus httpStatus;
 
-    // constructor, getters...
+    UserExceptionCode(String code, String desc, HttpStatus httpStatus) {
+        this.code = code;
+        this.desc = desc;
+        this.httpStatus = httpStatus;
+    }
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public String getDesc() {
+        return desc;
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
 }
-
-// 使用
-throw CustomerExceptionFactory.of(OrderExceptionCode.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
 ```
 
-### 4. 国际化支持
+#### 支持国际化的实现示例
 
-在数据库中配置错误码的多语言消息：
-
-```sql
-INSERT INTO business_code (code, language, message_template) VALUES
-('USER_AGE_INVALID', 'zh', '用户年龄必须在 {0} 到 {1} 之间'),
-('USER_AGE_INVALID', 'en', 'User age must be between {0} and {1}');
-```
-
-使用时：
 ```java
-throw CustomerExceptionFactory.badRequest("USER_AGE_INVALID", 18, 65);
-// 中文环境：用户年龄必须在 18 到 65 之间
-// 英文环境：User age must be between 18 and 65
+@Getter
+@AllArgsConstructor
+public enum OrderExceptionCode implements ExceptionCode {
+    ORDER_NOT_FOUND("ORDER_001", "订单不存在", "Order not found", HttpStatus.NOT_FOUND),
+    ORDER_EXPIRED("ORDER_002", "订单已过期", "Order expired", HttpStatus.BAD_REQUEST),
+    INSUFFICIENT_STOCK("ORDER_003", "库存不足", "Insufficient stock", HttpStatus.CONFLICT);
+
+    private final String code;
+    private final String desc;
+    private final String enDesc;
+    private final HttpStatus httpStatus;
+
+    @Override
+    public String getEnDesc() {
+        return enDesc;
+    }
+}
 ```
 
-## 优化亮点
+---
 
-1. **统一错误码**：解决了之前错误码不一致的问题
-2. **Builder模式**：支持链式调用，灵活构建异常
-3. **枚举支持**：类型安全，避免硬编码
-4. **多种创建方式**：简单场景用工厂方法，复杂场景用Builder
-5. **HTTP状态码集成**：异常与HTTP响应无缝对接
-6. **国际化支持**：从数据库加载多语言消息
-7. **完整注释**：所有类和方法都有详细的JavaDoc
-8. **职责分离**：业务异常和系统异常明确区分
+## 2. CustomerException 和 SystemException
 
-## 迁移指南
+### CustomerException（业务异常）
 
-### 旧代码
+用于业务逻辑处理失败的场景，支持错误码、消息和HTTP状态码。
+
 ```java
-throw new CustomerException(
-    DefaultExceptionCode.COMMON_ERROR.getCode(), 
-    "操作失败", 
-    HttpStatus.INTERNAL_SERVER_ERROR
+public class CustomerException extends RuntimeException {
+    private final HttpStatus httpStatus;
+    private final String message;
+    private final String code;
+}
+```
+
+**使用场景**：
+- 用户输入验证失败
+- 业务规则违反
+- 资源不存在
+- 权限检查失败
+
+### SystemException（系统异常）
+
+用于系统级别的异常，通常不应向用户展示详细信息。
+
+```java
+public class SystemException extends RuntimeException {
+    private final String code;
+    private final String message;
+}
+```
+
+**使用场景**：
+- 数据库连接失败
+- 配置文件错误
+- 外部服务调用失败
+- 内部系统错误
+
+---
+
+## 3. DefaultExceptionCode 枚举
+
+框架提供了标准的HTTP异常码枚举，覆盖常见的HTTP错误场景。
+
+| 错误码 | HTTP状态码 | 中文描述 | 英文描述 |
+|------|-----------|--------|--------|
+| 400 | BAD_REQUEST | 请求不合法 | Request is invalid |
+| 401 | UNAUTHORIZED | 未认证 | Unauthorized |
+| 403 | FORBIDDEN | 无权限 | Forbidden |
+| 404 | NOT_FOUND | 资源不存在 | Not Found |
+| 405 | METHOD_NOT_ALLOWED | 不支持的请求方法 | Method Not Allowed |
+| 415 | UNSUPPORTED_MEDIA_TYPE | 不支持的媒体类型 | Unsupported Media Type |
+| 429 | TOO_MANY_REQUESTS | 请求过于频繁 | Too Many Requests |
+| 500 | COMMON_ERROR | 通用业务错误 | Internal Server Error |
+
+---
+
+## 4. CustomerExceptionFactory 工厂
+
+### 作用
+提供便捷的方法创建不同类型的业务异常，支持国际化和缓存。
+
+### 主要方法
+
+#### 4.1 使用异常码枚举创建异常
+
+```java
+// 基础用法
+throw CustomerExceptionFactory.of(DefaultExceptionCode.BAD_REQUEST);
+
+// 使用自定义枚举
+throw CustomerExceptionFactory.of(UserExceptionCode.USER_NOT_FOUND);
+
+// 支持消息参数化
+throw CustomerExceptionFactory.of(OrderExceptionCode.INSUFFICIENT_STOCK, 10, 5);
+
+// 自定义HTTP状态码
+throw CustomerExceptionFactory.of(
+    UserExceptionCode.USER_NOT_FOUND,
+    HttpStatus.NOT_FOUND
 );
 ```
 
-### 新代码（多种选择）
+#### 4.2 创建带消息的异常
+
 ```java
-// 选项1：使用工厂
-throw CustomerExceptionFactory.businessMessage("操作失败");
+// 直接创建异常
+CustomerException ex = CustomerExceptionFactory.create(
+    "CUSTOM_001",
+    "Custom error message",
+    HttpStatus.BAD_REQUEST
+);
+throw ex;
 
-// 选项2：使用Builder
-throw CustomerException.builder()
-    .code(DefaultExceptionCode.COMMON_ERROR)
-    .message("操作失败")
-    .build();
-
-// 选项3：使用枚举
-throw CustomerExceptionFactory.of(DefaultExceptionCode.COMMON_ERROR)
-    .message("操作失败")
-    .build();
+// 创建业务消息异常（无需处理国际化）
+throw CustomerExceptionFactory.businessMessage("操作失败，请稍后重试");
 ```
+
+#### 4.3 使用国际化消息创建异常
+
+```java
+// 从数据库加载业务错误码配置
+throw CustomerExceptionFactory.createException("USER_001", "John");
+throw CustomerExceptionFactory.createException(HttpStatus.NOT_FOUND, "USER_001", "John");
+```
+
+### 4.4 从异常提取信息
+
+```java
+try {
+    // ... 业务逻辑
+} catch (Exception e) {
+    ExceptionInfo info = CustomerExceptionFactory.getMessage(e);
+    // info.getCode()
+    // info.getMessage()
+    // info.getHttpStatus()
+}
+```
+
+---
+
+## 5. ExceptionInfo 响应类
+
+### 作用
+封装异常的错误码、消息和HTTP状态码，用作API响应。
+
+### 属性
+
+```java
+@Data
+@Builder
+public class ExceptionInfo {
+    private String code;              // 业务错误码
+    private String message;           // 错误消息
+    private Integer httpStatus;       // HTTP状态码（默认500）
+}
+```
+
+### 创建方法
+
+```java
+// 从异常码枚举创建
+ExceptionInfo info = ExceptionInfo.of(
+    DefaultExceptionCode.BAD_REQUEST,
+    HttpStatus.BAD_REQUEST
+);
+
+// 从错误码和消息创建
+ExceptionInfo info = ExceptionInfo.of("CUSTOM_001", "Custom message");
+
+// 创建未知错误信息
+ExceptionInfo info = ExceptionInfo.unknown("UNKNOWN_001");
+```
+
+---
+
+## 6. BusinessCodeService 接口
+
+### 作用
+负责查询和管理业务错误码信息，支持多语言错误消息。
+
+### 使用场景
+当错误码配置存储在数据库中时，需要实现此接口。
+
+```java
+public interface BusinessCodeService {
+    /**
+     * 根据错误码查询对应的业务错误信息列表
+     * @param code 业务错误码
+     * @return 业务错误码数据列表（包含不同语言版本）
+     */
+    List<ExceptionCode> list(String code);
+}
+```
+
+### 实现示例
+
+```java
+@Service
+public class DatabaseBusinessCodeService implements BusinessCodeService {
+    
+    @Autowired
+    private ErrorCodeRepository errorCodeRepository;
+    
+    @Override
+    public List<ExceptionCode> list(String code) {
+        return errorCodeRepository.findByCode(code);
+    }
+}
+```
+
+---
+
+## 7. 完整使用示例
+
+### 7.1 基础用法
+
+```java
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable String id) {
+        User user = userService.findById(id);
+        if (user == null) {
+            throw CustomerExceptionFactory.of(UserExceptionCode.USER_NOT_FOUND);
+        }
+        return user;
+    }
+}
+```
+
+### 7.2 参数验证
+
+```java
+public void updateUser(String id, UserUpdateRequest request) {
+    if (request.getAge() < 0 || request.getAge() > 150) {
+        throw CustomerExceptionFactory.of(
+            DefaultExceptionCode.BAD_REQUEST
+        );
+    }
+    // ... 更新逻辑
+}
+```
+
+### 7.3 业务规则验证
+
+```java
+public void placeOrder(String userId, OrderCreateRequest request) {
+    User user = userService.findById(userId);
+    if (user == null) {
+        throw CustomerExceptionFactory.of(UserExceptionCode.USER_NOT_FOUND);
+    }
+    
+    if (!user.isEnabled()) {
+        throw CustomerExceptionFactory.of(UserExceptionCode.USER_DISABLED);
+    }
+    
+    if (request.getQuantity() > availableStock) {
+        throw CustomerExceptionFactory.of(
+            OrderExceptionCode.INSUFFICIENT_STOCK,
+            availableStock,
+            request.getQuantity()
+        );
+    }
+    // ... 创建订单
+}
+```
+
+### 7.4 系统异常处理
+
+```java
+public void syncDataFromExternalService() {
+    try {
+        ExternalApiClient.fetchData();
+    } catch (IOException e) {
+        throw new SystemException("EXTERNAL_SERVICE_ERROR", 
+            "Failed to fetch data from external service");
+    }
+}
+```
+
+### 7.5 异常处理器（全局）
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(CustomerException.class)
+    public ResponseEntity<ExceptionInfo> handleCustomerException(
+            CustomerException ex) {
+        ExceptionInfo info = CustomerExceptionFactory.getMessage(ex);
+        return ResponseEntity
+            .status(ex.getHttpStatus())
+            .body(info);
+    }
+    
+    @ExceptionHandler(SystemException.class)
+    public ResponseEntity<ExceptionInfo> handleSystemException(
+            SystemException ex) {
+        // 记录日志
+        log.error("System error: {}", ex.getMessage(), ex);
+        
+        ExceptionInfo info = ExceptionInfo.of(
+            "SYS_ERROR",
+            "Internal server error"
+        );
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(info);
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionInfo> handleException(Exception ex) {
+        ExceptionInfo info = CustomerExceptionFactory.getMessage(ex);
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(info);
+    }
+}
+```
+
+---
+
+## 8. 最佳实践
+
+### 8.1 错误码设计规范
+
+```
+格式：<模块前缀>_<功能>_<错误类型>
+示例：
+  - USER_LOGIN_FAILED       用户模块-登录-失败
+  - ORDER_PAYMENT_TIMEOUT   订单模块-支付-超时
+  - INVENTORY_STOCK_EMPTY   库存模块-库存-为空
+```
+
+### 8.2 异常码枚举管理
+
+- 每个业务模块创建独立的异常码枚举
+- 错误码应该具有唯一性和可读性
+- 提供清晰的中英文描述
+- 选择合适的HTTP状态码
+
+### 8.3 异常处理规则
+
+1. **业务异常**（CustomerException）
+   - 用于预期的业务错误
+   - 可向用户展示
+   - 选择合适的HTTP状态码
+
+2. **系统异常**（SystemException）
+   - 用于意外的系统错误
+   - 记录详细日志
+   - 向用户展示通用错误提示
+
+3. **参数验证**
+   - 优先使用 `DefaultExceptionCode.BAD_REQUEST`
+   - 提供清晰的错误消息
+
+### 8.4 国际化支持
+
+```java
+// 异常枚举实现国际化
+public enum PaymentExceptionCode implements ExceptionCode {
+    PAYMENT_FAILED(
+        "PAY_001",
+        "支付失败，请重试",
+        "Payment failed, please retry",
+        HttpStatus.BAD_REQUEST
+    );
+    
+    // ... 实现方法
+}
+
+// 框架自动根据客户端语言返回对应的错误消息
+```
+
+---
+
+## 9. 常见问题
+
+### Q：CustomerException 和 SystemException 如何选择？
+A：
+- **CustomerException**：用户可能遇到的业务逻辑错误（参数验证失败、资源不存在等）
+- **SystemException**：系统内部错误（数据库连接失败、第三方服务调用异常等）
+
+### Q：如何实现消息参数化？
+A：通过 `getFormatedMessage(args)` 方法，使用 `String.format` 格式化：
+```java
+public enum ErrorCode implements ExceptionCode {
+    INSUFFICIENT_BALANCE("BALANCE_001", "账户余额不足，需要 %d 元，当前余额 %d 元");
+    // 使用时：
+    throw CustomerExceptionFactory.of(ErrorCode.INSUFFICIENT_BALANCE, 100, 50);
+}
+```
+
+### Q：如何使用数据库存储的错误码？
+A：实现 `BusinessCodeService` 接口并注册到 `CustomerExceptionFactory`：
+```java
+@Autowired
+public void init(BusinessCodeService service) {
+    CustomerExceptionFactory.setBusinessCodeService(service);
+}
+```
+

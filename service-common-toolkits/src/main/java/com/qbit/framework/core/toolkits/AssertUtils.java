@@ -1,7 +1,7 @@
 package com.qbit.framework.core.toolkits;
 
 import com.qbit.framework.core.toolkits.exception.factory.CustomerExceptionFactory;
-import com.qbit.framework.core.toolkits.exception.type.CustomerException;
+import com.qbit.framework.core.toolkits.exception.CustomerException;
 import com.qbit.framework.core.toolkits.message.MessageFormatter;
 import com.qbit.framework.core.toolkits.message.MessagePlaceholder;
 import org.springframework.lang.Nullable;

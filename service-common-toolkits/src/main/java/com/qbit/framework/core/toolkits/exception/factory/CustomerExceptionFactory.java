@@ -5,7 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.qbit.framework.core.toolkits.exception.code.BusinessCodeService;
 import com.qbit.framework.core.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.core.toolkits.exception.code.ExceptionCode;
-import com.qbit.framework.core.toolkits.exception.type.CustomerException;
+import com.qbit.framework.core.toolkits.exception.CustomerException;
 import com.qbit.framework.core.toolkits.i18n.I18nMessageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

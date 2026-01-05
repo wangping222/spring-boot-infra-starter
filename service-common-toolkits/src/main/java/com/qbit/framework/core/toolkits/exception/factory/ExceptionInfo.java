@@ -18,17 +18,17 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExceptionInfo {
-    
+
     /**
      * 业务错误码
      */
     private String code;
-    
+
     /**
      * 错误消息
      */
     private String message;
-    
+
     /**
      * HTTP状态码
      */
@@ -56,10 +56,10 @@ public class ExceptionInfo {
      * @param httpStatus    HTTP状态码
      * @return 异常信息对象
      */
-    public static ExceptionInfo of(ExceptionCode exceptionCode, HttpStatus httpStatus) {
+    public static ExceptionInfo of(ExceptionCode exceptionCode, HttpStatus httpStatus, Object... args) {
         return ExceptionInfo.builder()
                 .code(exceptionCode.getCode())
-                .message(exceptionCode.getDesc())
+                .message(exceptionCode.getFormatedMessage(args))
                 .httpStatus(httpStatus.value())
                 .build();
     }
