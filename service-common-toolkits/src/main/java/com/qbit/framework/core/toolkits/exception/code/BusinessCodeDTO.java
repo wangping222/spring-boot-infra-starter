@@ -6,13 +6,14 @@ package com.qbit.framework.core.toolkits.exception.code;
  *
  * @author Qbit Framework
  */
-public interface BusinessCodeDTO {
+public interface BusinessCodeDTO extends ExceptionCode {
 
     /**
      * 获取业务错误码
      *
      * @return 错误码字符串
      */
+    @Override
     String getCode();
 
     /**
@@ -30,5 +31,13 @@ public interface BusinessCodeDTO {
      * @return 语言代码，如 "zh", "en" 等
      */
     String getLanguage();
+
+
+    /**
+     * 格式化错误消息
+     * @param args
+     * @return
+     */
+    String getFormatedMessage(Object... args);
 
 }
