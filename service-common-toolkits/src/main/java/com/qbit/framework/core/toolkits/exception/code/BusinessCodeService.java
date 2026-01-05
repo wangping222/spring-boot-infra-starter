@@ -17,5 +17,5 @@ public interface BusinessCodeService {
      * @param code 业务错误码
      * @return 业务错误码数据列表，包含不同语言版本的错误消息
      */
-    List<BusinessCodeDTO> list(String code);
+    List<ExceptionCode> list(String code);
 }

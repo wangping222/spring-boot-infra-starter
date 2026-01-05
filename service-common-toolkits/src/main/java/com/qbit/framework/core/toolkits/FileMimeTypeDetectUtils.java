@@ -53,7 +53,7 @@ public final class FileMimeTypeDetectUtils {
     }
 
     @NotNull
-    public static MimeType detectAs(@NotNull InputStream in,  String filename) {
+    public static MimeType detectAs(@NotNull InputStream in, String filename) {
         return MimeType.valueOf(detect(in, filename));
     }
 
@@ -95,7 +95,7 @@ public final class FileMimeTypeDetectUtils {
      * @return mime 文件类型
      */
     @NotBlank
-    public static String detect(@NotNull InputStreamSource source,  String filename) {
+    public static String detect(@NotNull InputStreamSource source, String filename) {
         try (InputStream in = source.getInputStream()) {
             if (StringUtils.hasText(filename)) {
                 return TIKA.detect(in, filename);
@@ -104,7 +104,7 @@ public final class FileMimeTypeDetectUtils {
             }
         } catch (IOException exception) {
             log.error("detect mimeType exception, filename = {}, message = {}", filename, exception.getMessage(), exception);
-            throw CustomerExceptionFactory.internalError(DefaultExceptionCode.COMMON_ERROR);
+            throw CustomerExceptionFactory.of(DefaultExceptionCode.COMMON_ERROR);
         }
     }
 }

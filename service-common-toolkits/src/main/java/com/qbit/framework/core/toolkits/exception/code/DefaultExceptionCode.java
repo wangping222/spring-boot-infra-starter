@@ -6,9 +6,26 @@ import org.springframework.http.HttpStatus;
 
 /**
  * 默认异常码枚举
- * 提供通用的异常码定义，涵盖常见的HTTP错误场景
+ * 提供通用的HTTP异常码定义，涵盖常见的HTTP错误场景
  *
- * <p>各模块可以定义自己的异常码枚举来扩展更具体的业务错误
+ * <p>这个枚举直接实现 ExceptionCode 接口，用于处理标准的HTTP错误
+ * 对于业务特定的错误码，应该创建自己的异常码枚举实现 ExceptionCode 接口
+ *
+ * <p>使用示例：
+ * <pre>
+ * // 创建异常
+ * throw CustomerExceptionFactory.of(DefaultExceptionCode.BAD_REQUEST);
+ * throw CustomerExceptionFactory.of(DefaultExceptionCode.UNAUTHORIZED);
+ * 
+ * // 使用自定义异常码
+ * public enum UserExceptionCode implements ExceptionCode {
+ *     USER_NOT_FOUND("USER_001", "用户不存在", HttpStatus.NOT_FOUND),
+ *     USER_DISABLED("USER_002", "用户已被禁用", HttpStatus.FORBIDDEN);
+ *     
+ *     // ... 实现接口
+ * }
+ * throw CustomerExceptionFactory.of(UserExceptionCode.USER_NOT_FOUND);
+ * </pre>
  *
  * @author Qbit Framework
  */
@@ -62,12 +79,12 @@ public enum DefaultExceptionCode implements ExceptionCode {
     private final String code;
 
     /**
-     * 错误描述
+     * 错误描述（中文）
      */
     private final String desc;
 
     /**
-     * 英文描述
+     * 错误描述（英文）
      */
     private final String enDesc;
 

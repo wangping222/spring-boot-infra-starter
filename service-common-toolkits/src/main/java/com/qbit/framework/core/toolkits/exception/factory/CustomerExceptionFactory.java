@@ -2,13 +2,11 @@ package com.qbit.framework.core.toolkits.exception.factory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.qbit.framework.core.toolkits.exception.code.BusinessCodeDTO;
 import com.qbit.framework.core.toolkits.exception.code.BusinessCodeService;
 import com.qbit.framework.core.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.core.toolkits.exception.code.ExceptionCode;
 import com.qbit.framework.core.toolkits.exception.type.CustomerException;
 import com.qbit.framework.core.toolkits.i18n.I18nMessageUtils;
-import com.qbit.framework.core.toolkits.message.MessageFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -49,7 +47,7 @@ public class CustomerExceptionFactory {
     /**
      * 业务错误码缓存
      */
-    private static final Cache<String, List<BusinessCodeDTO>> BUSINESS_CODE_CACHE =
+    private static final Cache<String, List<ExceptionCode>> BUSINESS_CODE_CACHE =
             Caffeine.newBuilder()
                     .maximumSize(2048)
                     .expireAfterWrite(Duration.ofMinutes(10))
@@ -84,9 +82,11 @@ public class CustomerExceptionFactory {
      * @param exceptionCode 异常码枚举
      * @return 业务异常
      */
-    public static CustomerException of(ExceptionCode exceptionCode) {
+    public static CustomerException of(ExceptionCode exceptionCode, String... args) {
+        String formatedMessage = exceptionCode.getFormatedMessage(args);
         return CustomerException.builder()
                 .code(exceptionCode)
+                .message(formatedMessage)
                 .httpStatus(exceptionCode.getHttpStatus())
                 .build();
     }
@@ -98,9 +98,11 @@ public class CustomerExceptionFactory {
      * @param httpStatus HTTP状态码
      * @return 业务异常
      */
-    public static CustomerException of(ExceptionCode exceptionCode, HttpStatus httpStatus) {
+    public static CustomerException of(ExceptionCode exceptionCode, HttpStatus httpStatus, String... args) {
+        String formatedMessage = exceptionCode.getFormatedMessage(args);
         return CustomerException.builder()
                 .code(exceptionCode)
+                .message(formatedMessage)
                 .httpStatus(httpStatus)
                 .build();
     }
@@ -177,21 +179,21 @@ public class CustomerExceptionFactory {
      * @return 异常信息
      */
     public static ExceptionInfo getMessage(String code, Object... args) {
-        List<BusinessCodeDTO> businessCodes = loadBusinessCodes(code);
+        List<ExceptionCode> businessCodes = loadBusinessCodes(code);
 
         if (CollectionUtils.isEmpty(businessCodes)) {
             return ExceptionInfo.unknown(code);
         }
 
         Locale locale = I18nMessageUtils.requireLocale();
-        BusinessCodeDTO businessCode = businessCodes.stream()
+        ExceptionCode businessCode = businessCodes.stream()
                 .filter(bc -> locale.getLanguage().equals(bc.getLanguage()))
                 .findFirst()
                 .orElse(businessCodes.get(0));
 
         return ExceptionInfo.builder()
                 .code(businessCode.getCode())
-                .message(MessageFormatter.java().format(businessCode.getMessageTemplate(), args))
+                .message(businessCode.getFormatedMessage(args))
                 .build();
     }
 
@@ -201,7 +203,7 @@ public class CustomerExceptionFactory {
      * @param code 错误码
      * @return 业务错误码列表
      */
-    private static List<BusinessCodeDTO> loadBusinessCodes(String code) {
+    private static List<ExceptionCode> loadBusinessCodes(String code) {
         try {
             return BUSINESS_CODE_CACHE.get(code, k -> {
                 try {

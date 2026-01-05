@@ -1,5 +1,6 @@
 package com.qbit.framework.controller;
 
+import com.qbit.framework.core.toolkits.exception.code.DefaultExceptionCode;
 import com.qbit.framework.core.toolkits.exception.factory.CustomerExceptionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,12 +40,12 @@ public class TestController {
 
     @PostMapping("exception")
     public String testException() {
-        throw CustomerExceptionFactory.badRequest("400");
+        throw CustomerExceptionFactory.of(DefaultExceptionCode.BAD_REQUEST);
     }
 
 
     @PostMapping("long-time")
-    public  String longTimeWork(){
+    public String longTimeWork() {
         try {
             // 告警阈值200ms
             Thread.sleep(500);
