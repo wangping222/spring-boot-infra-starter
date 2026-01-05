@@ -124,13 +124,25 @@ public class LockTransactionUtil {
 
         T result = action.get();
 
+        registerSynchronization(lock, result, afterCommit, afterRollback);
+
+        return result;
+    }
+
+    /**
+     * 注册事务同步器，处理回调和锁释放
+     */
+    private static <T> void registerSynchronization(RLock lock, T result,
+                                                     Consumer<T> afterCommit, Runnable afterRollback) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCompletion(int status) {
                 try {
                     if (status == STATUS_COMMITTED && afterCommit != null) {
+                        log.debug("Transaction committed, executing afterCommit callback");
                         afterCommit.accept(result);
                     } else if (status == STATUS_ROLLED_BACK && afterRollback != null) {
+                        log.debug("Transaction rolled back, executing afterRollback callback");
                         afterRollback.run();
                     }
                 } catch (Exception e) {
@@ -140,8 +152,6 @@ public class LockTransactionUtil {
                 }
             }
         });
-
-        return result;
     }
 
     private static void releaseLock(RLock lock) {
@@ -243,24 +253,7 @@ public class LockTransactionUtil {
                     T result = action.get();
 
                     // 3. 注册事务同步器
-                    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                        @Override
-                        public void afterCompletion(int status) {
-                            try {
-                                if (status == STATUS_COMMITTED && afterCommit != null) {
-                                    log.debug("Transaction committed, executing afterCommit callback");
-                                    afterCommit.accept(result);
-                                } else if (status == STATUS_ROLLED_BACK && afterRollback != null) {
-                                    log.debug("Transaction rolled back, executing afterRollback callback");
-                                    afterRollback.run();
-                                }
-                            } catch (Exception e) {
-                                log.error("Callback execution failed", e);
-                            } finally {
-                                releaseLock(lock);
-                            }
-                        }
-                    });
+                    registerSynchronization(lock, result, afterCommit, afterRollback);
 
                     return result;
                 });
