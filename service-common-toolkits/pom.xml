@@ -94,6 +94,13 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
         </dependency>
+        <!-- HTTP 客户端：OkHttp（可选依赖） -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.aliyun.openservices</groupId>
             <artifactId>aliyun-log</artifactId>
