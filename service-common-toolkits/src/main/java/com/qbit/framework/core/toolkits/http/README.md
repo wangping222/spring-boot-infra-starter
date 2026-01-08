@@ -4,6 +4,12 @@
 
 本 HTTP 工具类提供了灵活易用、支持扩展的 HTTP 请求功能，支持 JDK HttpClient 和 OkHttp 两种实现。
 
+**核心特性：**
+- ✅ 自动链路追踪传播（默认启用）
+- ✅ 灵活的拦截器机制
+- ✅ 简洁的 API 设计
+- ✅ 支持多种 HTTP 客户端实现
+
 ## 核心类说明
 
 - **HttpUtils** - 静态工具类，提供最简便的使用方式
@@ -12,6 +18,8 @@
 - **HttpClient** - 客户端接口，支持不同实现
 - **JdkHttpClientImpl** - JDK 11+ HttpClient 实现（默认）
 - **OkHttpClientImpl** - OkHttp 实现
+- **TraceInterceptor** - 链路追踪拦截器（默认启用）
+- **HttpClientInterceptor** - 拦截器接口，支持自定义扩展
 
 ## 快速开始
 
@@ -125,17 +133,62 @@ User user = response.as(User.class);
 HttpResponse response = HttpUtils.get("https://api.example.com/users");
 List<User> users = response.asList(User.class);
 
-// 解析为 Map
-HttpResponse response = HttpUtils.get("https://api.example.com/config");
+// 解析为 Map<String, Object>
 Map<String, Object> config = response.asMap();
 
-// 支持泛型的复杂类型
-HttpResponse response = HttpUtils.get("https://api.example.com/data");
-Map<String, List<User>> data = response.as(new TypeReference<Map<String, List<User>>>() {});
+// 解析为 Map<String, User>
+Map<String, User> userMap = response.asMapOf(User.class);
+
+// 解析为 List<Map<String, Object>>
+List<Map<String, Object>> items = response.asListOfMap();
 
 // 方式2：使用工具类方法（向后兼容）
 User user = HttpUtils.parseResponse(response, User.class);
 List<User> users = HttpUtils.parseResponse(response, new TypeReference<List<User>>() {});
+```
+
+**常用解析方法：**
+
+```java
+// 1. 解析为简单对象
+User user = response.as(User.class);
+
+// 2. 解析为 List
+List<User> users = response.asList(User.class);
+
+// 3. 解析为统一响应包装类（最常用⭐）
+Result<User> result = response.asGeneric(Result.class, User.class);
+Result<List<User>> result = response.asGeneric(Result.class, List.class, User.class);
+ApiResponse<Order> apiResp = response.asGeneric(ApiResponse.class, Order.class);
+
+// 4. 解析为 Map
+Map<String, Object> map = response.asMap();
+Map<String, User> userMap = response.asMapOf(User.class);
+```
+
+**统一响应格式示例：**
+
+```java
+// 假设后端统一返回格式：
+class Result<T> {
+    private int code;
+    private String message;
+    private T data;
+}
+
+// 使用方式：
+Result<User> result = HttpUtils.get("https://api.example.com/user/1")
+    .asGeneric(Result.class, User.class);
+
+if (result.getCode() == 200) {
+    User user = result.getData();
+}
+
+// List 数据：
+Result<List<User>> result = HttpUtils.get("https://api.example.com/users")
+    .asGeneric(Result.class, List.class, User.class);
+
+List<User> users = result.getData();
 ```
 
 **安全解析方法：**
@@ -162,22 +215,25 @@ List<String> setCookies = response.getHeaders("Set-Cookie");
 
 ## 使用不同的 HTTP 客户端
 
-### 1. 使用 JDK HttpClient（默认）
+### 1. 使用 JDK HttpClient（默认，带链路追踪）
 
 ```java
-// 方式1：使用默认客户端
+// 方式1：使用默认客户端（自动追踪）
 HttpResponse response = HttpUtils.get("https://api.example.com/users");
 
-// 方式2：显式创建
+// 方式2：显式创建（带追踪）
 HttpClient client = HttpUtils.createJdkHttpClient();
 HttpRequest request = HttpUtils.request("https://api.example.com/users").get().build();
 HttpResponse response = client.execute(request);
+
+// 方式3：创建不带追踪的客户端
+HttpClient client = HttpUtils.createJdkHttpClient(false);
 ```
 
 ### 2. 使用 OkHttp
 
 ```java
-// 方式1：使用默认配置
+// 方式1：使用默认配置（带追踪）
 HttpClient client = HttpUtils.createOkHttpClient();
 HttpRequest request = HttpUtils.request("https://api.example.com/users").get().build();
 HttpResponse response = client.execute(request);
@@ -189,56 +245,246 @@ OkHttpClient okHttpClient = new OkHttpClient.Builder()
     .addInterceptor(new LoggingInterceptor())
     .build();
 
-HttpClient client = new OkHttpClientImpl(okHttpClient);
+HttpClient client = new OkHttpClientImpl(okHttpClient)
+    .addInterceptor(new TraceInterceptor());  // 手动添加追踪
 HttpResponse response = client.execute(request);
 ```
 
 ### 3. 带超时的客户端
 
 ```java
+// 带追踪
 HttpClient client = HttpUtils.createClientWithTimeout(Duration.ofSeconds(5));
-HttpRequest request = HttpUtils.request("https://api.example.com/users").get().build();
+
+// 不带追踪
+HttpClient client = HttpUtils.createClientWithTimeout(Duration.ofSeconds(5), false);
+```
+
+### 4. 使用构建器创建客户端
+
+```java
+// 完全自定义的客户端
+HttpClient client = HttpUtils.builder()
+    .useOkHttp()                                    // 使用 OkHttp
+    .enableTrace(true)                              // 启用追踪
+    .timeout(Duration.ofSeconds(10))                // 设置超时
+    .addInterceptor(new LoggingInterceptor())       // 添加日志拦截器
+    .build();
+```
+
+## 链路追踪
+
+### 自动追踪传播
+
+默认情况下，所有通过 `HttpUtils` 发起的请求都会自动传播链路追踪信息（traceId 和 spanId）。
+
+```java
+// 自动传播当前线程的 traceId 和 spanId
+HttpResponse response = HttpUtils.get("https://api.example.com/users");
+
+// 响应头会自动包含：
+// X-Trace-Id: <当前的 traceId>
+// X-Span-Id: <新生成的 spanId>
+```
+
+### 禁用链路追踪
+
+如果某些场景不需要追踪：
+
+```java
+// 方式1：使用不带追踪的默认客户端
+HttpClient client = HttpUtils.getClientWithoutTrace();
 HttpResponse response = client.execute(request);
+
+// 方式2：创建时指定
+HttpClient client = HttpUtils.createJdkHttpClient(false);
+
+// 方式3：使用构建器
+HttpClient client = HttpUtils.builder()
+    .enableTrace(false)
+    .build();
+```
+
+### 自定义追踪行为
+
+```java
+// 创建自定义追踪拦截器
+TraceInterceptor traceInterceptor = new TraceInterceptor(
+    true,   // propagateTrace: 是否传播追踪信息
+    false   // generateNewSpan: 是否生成新的 spanId（false=使用当前 spanId）
+);
+
+HttpClient client = new JdkHttpClientImpl()
+    .addInterceptor(traceInterceptor);
+```
+
+### 链路追踪原理
+
+当发起 HTTP 请求时：
+
+1. `TraceInterceptor` 从当前线程的 MDC 中获取 `traceId` 和 `spanId`
+2. 将 `traceId` 添加到请求头 `X-Trace-Id`
+3. 为下游服务生成新的 `spanId`，添加到请求头 `X-Span-Id`
+4. 下游服务收到请求后，继续传播追踪信息
+
+这样就形成了完整的调用链路：
+
+```
+服务A (traceId=123, spanId=456)
+  └─> HTTP请求 (X-Trace-Id=123, X-Span-Id=789)
+      └─> 服务B (traceId=123, spanId=789)
+          └─> HTTP请求 (X-Trace-Id=123, X-Span-Id=abc)
+              └─> 服务C (traceId=123, spanId=abc)
+```
+
+## 自定义拦截器
+
+### 实现拦截器接口
+
+```java
+public class CustomInterceptor implements HttpClientInterceptor {
+    
+    @Override
+    public HttpRequest intercept(HttpRequest request) {
+        // 修改请求，例如添加签名
+        String sign = calculateSign(request);
+        
+        return HttpUtils.request(request.getUrl())
+            .method(request.getMethod())
+            .headers(request.getHeaders())
+            .header("X-Sign", sign)
+            .body(request.getBody())
+            // ... 其他属性
+            .build();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;  // 优先级，数字越小越先执行
+    }
+}
+```
+
+### 使用自定义拦截器
+
+```java
+// 方式1：添加到客户端
+HttpClient client = HttpUtils.createJdkHttpClient()
+    .addInterceptor(new CustomInterceptor())
+    .addInterceptor(new LoggingInterceptor());
+
+// 方式2：使用构建器
+HttpClient client = HttpUtils.builder()
+    .addInterceptor(new CustomInterceptor())
+    .addInterceptor(new LoggingInterceptor())
+    .build();
+```
+
+### 内置拦截器
+
+**TraceInterceptor** - 链路追踪拦截器
+```java
+HttpClient client = new JdkHttpClientImpl()
+    .addInterceptor(new TraceInterceptor());
+```
+
+**LoggingInterceptor** - 日志拦截器
+```java
+HttpClient client = new JdkHttpClientImpl()
+    .addInterceptor(new LoggingInterceptor(true, true));  // 记录 headers 和 body
 ```
 
 ## 实际应用场景
 
-### 场景1：调用第三方 API
+### 场景1：调用第三方 API（统一响应格式）
 
 ```java
 public class ExternalApiClient {
     private static final String API_BASE_URL = "https://api.example.com";
     private static final String API_KEY = "your-api-key";
     
+    // 第三方 API 统一响应格式
+    static class ApiResult<T> {
+        private int code;
+        private String message;
+        private T data;
+        
+        public T getData() { return data; }
+        public boolean isSuccess() { return code == 0; }
+    }
+    
     public List<User> getUsers(int page, int size) {
         Map<String, String> headers = Map.of("X-API-Key", API_KEY);
-        Map<String, String> params = Map.of("page", String.valueOf(page), "size", String.valueOf(size));
+        Map<String, String> params = Map.of(
+            "page", String.valueOf(page), 
+            "size", String.valueOf(size)
+        );
         
-        HttpResponse response = HttpUtils.get(API_BASE_URL + "/users", headers, params);
-        return response.asList(User.class);  // 直接解析为 List
-    }
-    
-    public User createUser(User user) {
-        Map<String, String> headers = Map.of("X-API-Key", API_KEY);
-        HttpResponse response = HttpUtils.post(API_BASE_URL + "/users", headers, user);
-        return response.as(User.class);  // 直接解析为对象
-    }
-    
-    public User getUserSafely(String userId) {
-        HttpResponse response = HttpUtils.get(API_BASE_URL + "/users/" + userId);
-        return response.asOrNull(User.class);  // 失败返回 null
-    }
-}
-```
-
-### 场景2：微服务之间调用
+        // 解析为统一响应格式
+        ApiResult<List<User>> result = HttpUtils.get(API_BASE_URL + "/users", headers, params)
+            .asGeneric(ApiResult.class, List.class, User.class);
+        
+        if (res（内部统一格式）
 
 ```java
 public class OrderServiceClient {
     private final HttpClient httpClient;
     private final String baseUrl;
     
+    // 微服务统一响应格式
+    static class ServiceResult<T> {
+        private Integer code;
+        private String msg;
+        private T data;
+        
+        public T getData() { return data; }
+        public boolean isOk() { return code != null && code == 200; }
+    }
+    
     public OrderServiceClient(String baseUrl) {
+        this.baseUrl = baseUrl;
+        // 使用自定义超时配置（带链路追踪）
+        this.httpClient = HttpUtils.createClientWithTimeout(Duration.ofSeconds(3));
+    }
+    
+    public Order getOrder(String orderId) {
+        HttpRequest request = HttpUtils.request(baseUrl + "/orders/" + orderId)
+            .get()
+            .header("X-Service", "user-service")
+            .build();
+        
+        ServiceResult<Order> result = httpClient.execute(request)
+            .asGeneric(ServiceResult.class, Order.class);
+        
+        return result.getData();
+    }
+    
+    public List<Order> getOrdersByUser(String userId) {
+        HttpRequest request = HttpUtils.request(baseUrl + "/orders")
+            .get()
+            .queryParam("userId", userId)
+            .header("X-Service", "user-service")
+            .build();
+        
+        ServiceResult<List<Order>> result = httpClient.execute(request)
+            .asGeneric(ServiceResult.class, List.class, Order.class);
+        
+        if (result.isOk()) {
+            return result.getData();
+        }
+        throw new RuntimeException("查询订单失败: " + result.msg);
+    }
+    
+    public Order createOrder(CreateOrderRequest req) {
+        HttpRequest request = HttpUtils.request(baseUrl + "/orders")
+            .post()
+            .jsonBody(req)
+            .build();
+        
+        ServiceResult<Order> result = httpClient.execute(request)
+            .asGeneric(ServiceResult.class, Order.class);
+        
+        return result.getData(
         this.baseUrl = baseUrl;
         // 使用自定义超时配置
         this.httpClient = HttpUtils.createClientWithTimeout(Duration.ofSeconds(3));
@@ -297,11 +543,13 @@ public class RetryableHttpClient {
                 try {
                     Thread.sleep(1000L * attempt); // 指数退避
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new HttpClientException("Retry interrupted", e);
-                }
-            }
-        }
+   **默认启用链路追踪** - 所有通过 `HttpUtils` 的请求都会自动传播 traceId 和 spanId
+2. 如需更强大的功能（如连接池管理、OkHttp 拦截器等），建议使用 OkHttp
+3. 生产环境建议复用 HttpClient 实例，避免频繁创建
+4. 设置合理的超时时间，避免请求长时间阻塞
+5. 对敏感信息（如 token）要注意日志脱敏
+6. 拦截器按优先级（Order）执行，数字越小越先执行
+7. 链路追踪依赖 SLF4J MDC，确保日志框架正确配置
         
         throw new HttpClientException("Request failed after " + maxRetries + " retries", lastException);
     }

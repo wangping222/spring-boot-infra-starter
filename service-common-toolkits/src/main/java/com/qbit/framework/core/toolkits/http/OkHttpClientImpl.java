@@ -1,6 +1,7 @@
 package com.qbit.framework.core.toolkits.http;
 
 import com.alibaba.fastjson.JSON;
+import com.qbit.framework.core.toolkits.http.interceptor.HttpClientInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class OkHttpClientImpl implements HttpClient {
 
     private final OkHttpClient okHttpClient;
+    private final List<HttpClientInterceptor> interceptors = new ArrayList<>();
 
     /**
      * 使用默认配置构造
@@ -48,16 +50,19 @@ public class OkHttpClientImpl implements HttpClient {
     @Override
     public HttpResponse execute(HttpRequest request) throws HttpClientException {
         try {
+            // 应用拦截器
+            HttpRequest processedRequest = applyInterceptors(request);
+
             // 创建OkHttp客户端（针对每个请求的超时设置）
             OkHttpClient client = okHttpClient.newBuilder()
-                    .connectTimeout(request.getConnectTimeout().toMillis(), TimeUnit.MILLISECONDS)
-                    .readTimeout(request.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
-                    .writeTimeout(request.getWriteTimeout().toMillis(), TimeUnit.MILLISECONDS)
-                    .followRedirects(request.isFollowRedirects())
+                    .connectTimeout(processedRequest.getConnectTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                    .readTimeout(processedRequest.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                    .writeTimeout(processedRequest.getWriteTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                    .followRedirects(processedRequest.isFollowRedirects())
                     .build();
 
             // 构建请求
-            Request okRequest = buildOkHttpRequest(request);
+            Request okRequest = buildOkHttpRequest(processedRequest);
 
             // 执行请求
             try (Response response = client.newCall(okRequest).execute()) {
@@ -140,6 +145,32 @@ public class OkHttpClientImpl implements HttpClient {
         boolean successful = response.isSuccessful();
 
         return new HttpResponse(statusCode, body, headers, successful);
+    }
+
+    @Override
+    public HttpClient addInterceptor(HttpClientInterceptor interceptor) {
+        if (interceptor != null) {
+            this.interceptors.add(interceptor);
+            // 按优先级排序
+            this.interceptors.sort(Comparator.comparingInt(HttpClientInterceptor::getOrder));
+        }
+        return this;
+    }
+
+    @Override
+    public List<HttpClientInterceptor> getInterceptors() {
+        return Collections.unmodifiableList(interceptors);
+    }
+
+    /**
+     * 应用所有拦截器
+     */
+    private HttpRequest applyInterceptors(HttpRequest request) {
+        HttpRequest result = request;
+        for (HttpClientInterceptor interceptor : interceptors) {
+            result = interceptor.intercept(result);
+        }
+        return result;
     }
 
     @Override

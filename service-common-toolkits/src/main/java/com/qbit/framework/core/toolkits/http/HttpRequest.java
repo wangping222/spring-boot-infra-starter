@@ -1,6 +1,8 @@
 package com.qbit.framework.core.toolkits.http;
 
 import lombok.Getter;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.util.*;
@@ -8,7 +10,8 @@ import java.util.*;
 /**
  * HTTP 请求对象，支持链式调用
  *
- * @author zhoubobing
+ * @author Qbit Framework
+
  * @date 2026/1/7
  */
 @Getter
@@ -43,7 +46,7 @@ public class HttpRequest {
 
     public static class Builder {
         private final String url;
-        private String method = "GET";
+        private String method = HttpMethod.GET.name();
         private final Map<String, String> headers = new LinkedHashMap<>();
         private final Map<String, String> queryParams = new LinkedHashMap<>();
         private Object body;
@@ -63,23 +66,23 @@ public class HttpRequest {
         }
 
         public Builder get() {
-            return method("GET");
+            return method(HttpMethod.GET.name());
         }
 
         public Builder post() {
-            return method("POST");
+            return method(HttpMethod.POST.name());
         }
 
         public Builder put() {
-            return method("PUT");
+            return method(HttpMethod.PUT.name());
         }
 
         public Builder delete() {
-            return method("DELETE");
+            return method(HttpMethod.DELETE.name());
         }
 
         public Builder patch() {
-            return method("PATCH");
+            return method(HttpMethod.PATCH.name());
         }
 
         public Builder header(String name, String value) {
@@ -162,33 +165,16 @@ public class HttpRequest {
 
     /**
      * 获取完整的请求URL（包含查询参数）
+     * 使用 Spring UriComponentsBuilder 构建，自动处理 URL 编码
      */
     public String getFullUrl() {
         if (queryParams.isEmpty()) {
             return url;
         }
 
-        StringBuilder fullUrl = new StringBuilder(url);
-        if (!url.contains("?")) {
-            fullUrl.append("?");
-        } else if (!url.endsWith("&")) {
-            fullUrl.append("&");
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-        queryParams.forEach((key, value) -> {
-            joiner.add(urlEncode(key) + "=" + urlEncode(value));
-        });
-        fullUrl.append(joiner.toString());
-
-        return fullUrl.toString();
-    }
-
-    private String urlEncode(String value) {
-        try {
-            return java.net.URLEncoder.encode(value, "UTF-8");
-        } catch (Exception e) {
-            return value;
-        }
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        queryParams.forEach(builder::queryParam);
+        
+        return builder.build().toUriString();
     }
 }

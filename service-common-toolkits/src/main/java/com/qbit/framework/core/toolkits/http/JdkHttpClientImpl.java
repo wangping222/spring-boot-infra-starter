@@ -1,6 +1,7 @@
 package com.qbit.framework.core.toolkits.http;
 
 import com.alibaba.fastjson.JSON;
+import com.qbit.framework.core.toolkits.http.interceptor.HttpClientInterceptor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -15,13 +16,15 @@ import java.util.stream.Collectors;
 /**
  * JDK HttpClient 实现（JDK 11+）
  *
- * @author zhoubobing
+ * @author Qbit Framework
+
  * @date 2026/1/7
  */
 @Slf4j
 public class JdkHttpClientImpl implements HttpClient {
 
     private final java.net.http.HttpClient httpClient;
+    private final List<HttpClientInterceptor> interceptors = new ArrayList<>();
 
     /**
      * 使用默认配置构造
@@ -50,8 +53,11 @@ public class JdkHttpClientImpl implements HttpClient {
     @Override
     public HttpResponse execute(HttpRequest request) throws HttpClientException {
         try {
+            // 应用拦截器
+            HttpRequest processedRequest = applyInterceptors(request);
+
             // 构建JDK HttpRequest
-            java.net.http.HttpRequest jdkRequest = buildJdkHttpRequest(request);
+            java.net.http.HttpRequest jdkRequest = buildJdkHttpRequest(processedRequest);
 
             // 执行请求
             java.net.http.HttpResponse<String> response = httpClient.send(jdkRequest, BodyHandlers.ofString());
@@ -147,6 +153,32 @@ public class JdkHttpClientImpl implements HttpClient {
         boolean successful = statusCode >= 200 && statusCode < 300;
 
         return new HttpResponse(statusCode, body, headers, successful);
+    }
+
+    @Override
+    public HttpClient addInterceptor(HttpClientInterceptor interceptor) {
+        if (interceptor != null) {
+            this.interceptors.add(interceptor);
+            // 按优先级排序
+            this.interceptors.sort(Comparator.comparingInt(HttpClientInterceptor::getOrder));
+        }
+        return this;
+    }
+
+    @Override
+    public List<HttpClientInterceptor> getInterceptors() {
+        return Collections.unmodifiableList(interceptors);
+    }
+
+    /**
+     * 应用所有拦截器
+     */
+    private HttpRequest applyInterceptors(HttpRequest request) {
+        HttpRequest result = request;
+        for (HttpClientInterceptor interceptor : interceptors) {
+            result = interceptor.intercept(result);
+        }
+        return result;
     }
 
     @Override

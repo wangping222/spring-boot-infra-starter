@@ -2,20 +2,33 @@ package com.qbit.framework.core.toolkits.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.qbit.framework.core.toolkits.http.interceptor.HttpClientInterceptor;
+import com.qbit.framework.core.toolkits.http.interceptor.TraceInterceptor;
 
 import java.time.Duration;
 import java.util.Map;
 
 /**
  * HTTP 工具类 - 提供简化的静态方法
- * 默认使用 JDK HttpClient 实现
+ * 默认使用 JDK HttpClient 实现，并启用链路追踪
  *
- * @author zhoubobing
+ * @author Qbit Framework
+
  * @date 2026/1/7
  */
 public class HttpUtils {
 
-    private static final HttpClient DEFAULT_CLIENT = new JdkHttpClientImpl();
+    private static final HttpClient DEFAULT_CLIENT;
+    private static final HttpClient DEFAULT_CLIENT_WITHOUT_TRACE;
+
+    static {
+        // 带链路追踪的默认客户端
+        DEFAULT_CLIENT = new JdkHttpClientImpl()
+                .addInterceptor(new TraceInterceptor());
+
+        // 不带链路追踪的客户端
+        DEFAULT_CLIENT_WITHOUT_TRACE = new JdkHttpClientImpl();
+    }
 
     private HttpUtils() {
     }
@@ -183,34 +196,148 @@ public class HttpUtils {
     }
 
     /**
-     * 获取默认客户端
+     * 获取默认客户端（带链路追踪）
      */
     public static HttpClient getDefaultClient() {
         return DEFAULT_CLIENT;
     }
 
     /**
-     * 创建OkHttp客户端
+     * 获取不带链路追踪的客户端
+     */
+    public static HttpClient getClientWithoutTrace() {
+        return DEFAULT_CLIENT_WITHOUT_TRACE;
+    }
+
+    // ==================== 客户端创建方法 ====================
+
+    /**
+     * 创建OkHttp客户端（带链路追踪）
      */
     public static HttpClient createOkHttpClient() {
-        return new OkHttpClientImpl();
+        return createOkHttpClient(true);
+    }
+
+    /**
+     * 创建OkHttp客户端
+     *
+     * @param enableTrace 是否启用链路追踪
+     */
+    public static HttpClient createOkHttpClient(boolean enableTrace) {
+        HttpClient client = new OkHttpClientImpl();
+        if (enableTrace) {
+            client.addInterceptor(new TraceInterceptor());
+        }
+        return client;
+    }
+
+    /**
+     * 创建JDK HttpClient（带链路追踪）
+     */
+    public static HttpClient createJdkHttpClient() {
+        return createJdkHttpClient(true);
     }
 
     /**
      * 创建JDK HttpClient
+     *
+     * @param enableTrace 是否启用链路追踪
      */
-    public static HttpClient createJdkHttpClient() {
-        return new JdkHttpClientImpl();
+    public static HttpClient createJdkHttpClient(boolean enableTrace) {
+        HttpClient client = new JdkHttpClientImpl();
+        if (enableTrace) {
+            client.addInterceptor(new TraceInterceptor());
+        }
+        return client;
+    }
+
+    /**
+     * 创建带超时配置的客户端（带链路追踪）
+     */
+    public static HttpClient createClientWithTimeout(Duration timeout) {
+        return createClientWithTimeout(timeout, true);
     }
 
     /**
      * 创建带超时配置的客户端
+     *
+     * @param timeout 超时时间
+     * @param enableTrace 是否启用链路追踪
      */
-    public static HttpClient createClientWithTimeout(Duration timeout) {
-        return new JdkHttpClientImpl(
+    public static HttpClient createClientWithTimeout(Duration timeout, boolean enableTrace) {
+        HttpClient client = new JdkHttpClientImpl(
                 java.net.http.HttpClient.newBuilder()
                         .connectTimeout(timeout)
                         .build()
         );
+        if (enableTrace) {
+            client.addInterceptor(new TraceInterceptor());
+        }
+        return client;
+    }
+
+    /**
+     * 创建自定义客户端构建器
+     */
+    public static ClientBuilder builder() {
+        return new ClientBuilder();
+    }
+
+    /**
+     * 客户端构建器
+     */
+    public static class ClientBuilder {
+        private boolean useOkHttp = false;
+        private boolean enableTrace = true;
+        private Duration timeout;
+        private final java.util.List<HttpClientInterceptor> interceptors = new java.util.ArrayList<>();
+
+        public ClientBuilder useOkHttp() {
+            this.useOkHttp = true;
+            return this;
+        }
+
+        public ClientBuilder enableTrace(boolean enable) {
+            this.enableTrace = enable;
+            return this;
+        }
+
+        public ClientBuilder timeout(Duration timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public ClientBuilder addInterceptor(HttpClientInterceptor interceptor) {
+            this.interceptors.add(interceptor);
+            return this;
+        }
+
+        public HttpClient build() {
+            HttpClient client;
+
+            if (useOkHttp) {
+                client = new OkHttpClientImpl();
+            } else if (timeout != null) {
+                client = new JdkHttpClientImpl(
+                        java.net.http.HttpClient.newBuilder()
+                                .connectTimeout(timeout)
+                                .build()
+                );
+            } else {
+                client = new JdkHttpClientImpl();
+            }
+
+            // 添加链路追踪拦截器
+            if (enableTrace) {
+                client.addInterceptor(new TraceInterceptor());
+            }
+
+            // 添加自定义拦截器
+            for (HttpClientInterceptor interceptor : interceptors) {
+                client.addInterceptor(interceptor);
+            }
+
+            return client;
+        }
     }
 }

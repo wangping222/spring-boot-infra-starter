@@ -12,7 +12,8 @@ import java.util.Map;
 /**
  * HTTP 响应对象
  *
- * @author zhoubobing
+ * @author Qbit Framework
+
  * @date 2026/1/7
  */
 @Getter
@@ -21,14 +22,11 @@ public class HttpResponse {
     private final int statusCode;
     private final String body;
     private final Map<String, List<String>> headers;
-    private final boolean successful;
-
     /**
-     * 判断响应是否成功（状态码 2xx）
+     * -- GETTER --
+     *  判断响应是否成功（状态码 2xx）
      */
-    public boolean isSuccessful() {
-        return successful;
-    }
+    private final boolean successful;
 
     /**
      * 获取指定header的值（第一个）
@@ -106,7 +104,7 @@ public class HttpResponse {
     }
 
     /**
-     * 将响应体解析为 Map
+     * 将响应体解析为 Map&lt;String, Object&gt;
      *
      * @return 解析后的 Map
      * @throws HttpClientException 如果响应不成功或解析失败
@@ -118,6 +116,69 @@ public class HttpResponse {
         } catch (Exception e) {
             throw new HttpClientException("Failed to parse response body to Map", e);
         }
+    }
+
+    /**
+     * 将响应体解析为 Map&lt;String, T&gt;
+     *
+     * @param valueType Map 的值类型
+     * @param <T> 值类型参数
+     * @return 解析后的 Map
+     * @throws HttpClientException 如果响应不成功或解析失败
+     */
+    public <T> Map<String, T> asMapOf(Class<T> valueType) {
+        checkSuccessful();
+        try {
+            return JSON.parseObject(body, new TypeReference<Map<String, T>>(valueType) {});
+        } catch (Exception e) {
+            throw new HttpClientException("Failed to parse response body to Map<String, " + valueType.getSimpleName() + ">", e);
+        }
+    }
+
+    /**
+     * 将响应体解析为 List&lt;Map&lt;String, Object&gt;&gt;
+     *
+     * @return 解析后的 List
+     * @throws HttpClientException 如果响应不成功或解析失败
+     */
+    public List<Map<String, Object>> asListOfMap() {
+        checkSuccessful();
+        try {
+            return JSON.parseObject(body, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (Exception e) {
+            throw new HttpClientException("Failed to parse response body to List<Map>", e);
+        }
+    }
+
+    /**
+     * 将响应体解析为带泛型的包装类（常用于统一响应格式）
+     * <p>示例：Result&lt;User&gt;、Response&lt;List&lt;User&gt;&gt; 等
+     *
+     * @param wrapperClass 包装类（如 Result.class）
+     * @param typeArguments 泛型参数类型（如 User.class）
+     * @param <W> 包装类类型
+     * @return 解析后的对象
+     * @throws HttpClientException 如果响应不成功或解析失败
+     */
+    public <W> W asGeneric(Class<W> wrapperClass, Class<?>... typeArguments) {
+        checkSuccessful();
+        try {
+            if (typeArguments == null || typeArguments.length == 0) {
+                return JSON.parseObject(body, wrapperClass);
+            }
+            
+            // 构建泛型类型
+            return JSON.parseObject(body, buildParameterizedType(wrapperClass, typeArguments));
+        } catch (Exception e) {
+            throw new HttpClientException("Failed to parse response body to generic type", e);
+        }
+    }
+
+    /**
+     * 构建参数化类型
+     */
+    private java.lang.reflect.Type buildParameterizedType(Class<?> rawType, Class<?>... typeArguments) {
+        return new com.alibaba.fastjson.util.ParameterizedTypeImpl(typeArguments, null, rawType);
     }
 
     /**
