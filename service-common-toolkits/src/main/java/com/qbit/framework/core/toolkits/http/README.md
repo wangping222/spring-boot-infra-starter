@@ -117,17 +117,35 @@ if (response.isSuccessful()) {
 ### 2. 解析 JSON 响应
 
 ```java
-// 解析为对象
+// 方式1：直接从 response 解析（推荐）
 HttpResponse response = HttpUtils.get("https://api.example.com/user/1");
-User user = HttpUtils.parseResponse(response, User.class);
+User user = response.as(User.class);
 
 // 解析为 List
 HttpResponse response = HttpUtils.get("https://api.example.com/users");
-List<User> users = HttpUtils.parseResponse(response, new TypeReference<List<User>>() {});
+List<User> users = response.asList(User.class);
 
 // 解析为 Map
 HttpResponse response = HttpUtils.get("https://api.example.com/config");
-Map<String, Object> config = HttpUtils.parseResponse(response, new TypeReference<Map<String, Object>>() {});
+Map<String, Object> config = response.asMap();
+
+// 支持泛型的复杂类型
+HttpResponse response = HttpUtils.get("https://api.example.com/data");
+Map<String, List<User>> data = response.as(new TypeReference<Map<String, List<User>>>() {});
+
+// 方式2：使用工具类方法（向后兼容）
+User user = HttpUtils.parseResponse(response, User.class);
+List<User> users = HttpUtils.parseResponse(response, new TypeReference<List<User>>() {});
+```
+
+**安全解析方法：**
+
+```java
+// 解析失败返回 null
+User user = response.asOrNull(User.class);
+
+// 解析失败返回默认值
+User user = response.asOrDefault(User.class, new User());
 ```
 
 ### 3. 获取响应头
@@ -197,13 +215,18 @@ public class ExternalApiClient {
         Map<String, String> params = Map.of("page", String.valueOf(page), "size", String.valueOf(size));
         
         HttpResponse response = HttpUtils.get(API_BASE_URL + "/users", headers, params);
-        return HttpUtils.parseResponse(response, new TypeReference<List<User>>() {});
+        return response.asList(User.class);  // 直接解析为 List
     }
     
     public User createUser(User user) {
         Map<String, String> headers = Map.of("X-API-Key", API_KEY);
         HttpResponse response = HttpUtils.post(API_BASE_URL + "/users", headers, user);
-        return HttpUtils.parseResponse(response, User.class);
+        return response.as(User.class);  // 直接解析为对象
+    }
+    
+    public User getUserSafely(String userId) {
+        HttpResponse response = HttpUtils.get(API_BASE_URL + "/users/" + userId);
+        return response.asOrNull(User.class);  // 失败返回 null
     }
 }
 ```
@@ -223,7 +246,18 @@ public class OrderServiceClient {
     
     public Order getOrder(String orderId) {
         HttpRequest request = HttpUtils.request(baseUrl + "/orders/" + orderId)
+            .geresponse.as(Order.class);  // 直接解析为对象
+    }
+    
+    public List<Order> getOrdersByUser(String userId) {
+        HttpRequest request = HttpUtils.request(baseUrl + "/orders")
             .get()
+            .queryParam("userId", userId)
+            .header("X-Service", "user-service")
+            .build();
+        
+        HttpResponse response = httpClient.execute(request);
+        return response.asList(Order.class);  // 直接解析为 List
             .header("X-Service", "user-service")
             .build();
         
@@ -341,18 +375,35 @@ public class ApiClient {
 
 ### 2. 设置合理的超时时间
 
-```java
-HttpRequest request = HttpUtils.request(url)
-    .get()
-    .connectTimeout(Duration.ofSeconds(3))  // 连接超时
-    .readTimeout(Duration.ofSeconds(10))    // 读取超时
-    .build();
-```
-
-### 3. 异常处理
-
-```java
+// 方式1：直接解析（自动检查成功状态）
 try {
+    HttpResponse response = HttpUtils.get(url);
+    User user = response.as(User.class);  // 失败自动抛出异常
+    return user;
+} catch (HttpClientException e) {
+    log.error("HTTP请求异常", e);
+    throw new BusinessException("网络请求失败", e);
+}
+
+// 方式2：手动检查状态
+try {
+    HttpResponse response = HttpUtils.get(url);
+    if (response.isSuccessful()) {
+        return response.as(User.class);
+    } else {
+        log.error("API调用失败，状态码: {}, 响应: {}", 
+            response.getStatusCode(), response.getBody());
+        throw new BusinessException("API调用失败");
+    }
+} catch (HttpClientException e) {
+    log.error("HTTP请求异常", e);
+    throw new BusinessException("网络请求失败", e);
+}
+
+// 方式3：安全解析（不抛异常）
+User user = HttpUtils.get(url).asOrNull(User.class);
+if (user == null) {
+    // 处理失败情况
     HttpResponse response = HttpUtils.get(url);
     if (response.isSuccessful()) {
         return HttpUtils.parseResponse(response, User.class);
